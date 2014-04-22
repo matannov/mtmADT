@@ -1,0 +1,56 @@
+
+	# now lets check some edge cases :)
+	
+	
+	  chef leading
+	  #	This will fail (no chefs in the system).
+	
+	  judge print 
+	  #	This will fail (no judges in the system).
+	
+	
+	  chef    add   Kipi
+
+	
+			#All the following 5 commands will fail (invalid parameter):
+			chef add-dish Kipi Salad 			42      1  1  3     9 
+			chef add-dish Kipi Salad 			1       42 1  3     9
+			chef add-dish Kipi Salad 			1       1  42 3     9
+			chef add-dish Kipi Salad 			1       1  1  42    9
+			chef add-dish Kipi Salad 			1       1  1  1     -1			
+			
+
+chef    add   Kipi
+#this will fail (there's already a chef named Kipi!).
+
+
+#Now lets have 2 judges with the same nickname:
+judge add Bents 2
+judge add Bents 3
+
+judge add Bents 4
+#this will fail (invalid parameter)
+
+judge print
+#two judges with nickname "Bents" will be printed
+
+
+#All The following 4 commands will fail, because Obama is not a chef in the system.
+ chef add-dish Obama ChocolateCake    3      9  1  1     5
+ chef top-dish Obama
+ chef compete Kipi Obama
+ chef compete Obama Kipi
+
+ 
+ 
+chef  add   Oscar
+
+
+
+chef compete Kipi Kipi
+#This will fail - because a chef can't compete with himself.
+
+
+
+#This following will fail - because Oscar has no prepared dishes.
+chef top-dish Oscar

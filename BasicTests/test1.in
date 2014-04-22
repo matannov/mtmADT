@@ -1,0 +1,55 @@
+chef add Kipi
+# Kipi is a great chef.
+chef add Oscar
+# Oscar's favourite food is a mud cake, made with a generous amount of salt!
+
+chef add-dish Kipi Salad 			1      1  1  3     9 
+chef add-dish Kipi ChocolateCake    3      9  1  1     5
+chef add-dish Oscar MudCake 		3 	   1  1  10    4
+
+chef top-dish Kipi
+
+judge add Bents 2
+
+chef compete Kipi Oscar
+# poor Judge Bents spits Oscar's mud cake with disgust. He now hates Oscar.
+# Kipi won a gold point.
+
+chef leading
+# Kipi has 1 gold point, and Oscar has none.
+
+judge add Arik 2
+
+judge print
+
+chef compete Kipi Oscar
+# This will fail because Oscar has no dishes left!
+
+chef add-dish Oscar Salad 			1      1  1  3     3 
+#now Oscar has a Salad, and Kipi has a chocolate cake.
+
+chef compete Kipi Oscar
+# Arik decided in favour of Oscar's salad. Bents hates Oscar - so he decided in favour of Kipi.
+# So it's a tie and none of them earned a gold point in this competition.
+
+chef leading
+# Kipi has 1 gold point, and Oscar has none.
+
+chef add-dish Kipi ChocolateCake    3      9  1  1     5
+chef add-dish Oscar MudCake 		3 	   1  1  10    4
+chef compete Kipi Oscar
+# Now both Arik and Bents hate Oscar. Kipi won another gold point.
+
+chef leading
+# Kipi has 2 gold points, and Oscar has none.
+
+chef add-dish Kipi ChocolateCake    3      9  1  1     5
+chef add-dish Oscar MudCake 		3 	   1  1  10    4
+chef compete Kipi Oscar
+# Judge Bents decided it's enough mud for him, and he furiously resigns. Kipi won another gold point.
+
+judge print
+
+chef leading
+# Kipi has 3 gold points, and Oscar has none.
+

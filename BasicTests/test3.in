@@ -1,0 +1,179 @@
+chef add Kipi
+chef add Ugi
+chef add Oscar
+
+
+
+chef add-dish Kipi LettuceSalad  			2   1  4  4    4
+chef add-dish Kipi PotatoSalad 				1   1  4  4    3
+chef add-dish Kipi ChocolateCake  			3   9  2  1    5
+
+chef add-dish Ugi ChocolateCookie 			3   8  1  1    9
+
+chef add-dish Oscar MudCake 				3 	1  1  10   4
+chef add-dish Oscar MudCake 				3 	1  1  10   4
+chef add-dish Oscar MudCake 				3 	1  1  10   4 
+chef add-dish Oscar MudCake 				3 	1  1  10   4
+
+chef compete Oscar Ugi
+#This will fail because there are no judges. 
+
+judge add Arik 1
+judge add Bents 3
+
+#For convenience, we'll list the dishes of each chef here and there in the comments (ordered from top dish to least favourite).
+
+#Kipi's dishes: ChocolateCake, LettuceSalad, PotatoSalad.
+#Ugi's dishes: ChocolateCookie.
+#Oscar's dishes:  MudCake, MudCake, MudCake, MudCake.
+#Judges: Arik, Bents
+
+
+chef compete Kipi Ugi
+# Kipi's ChocolateCake is in a tie with Ugi's ChocolateCookie
+# So the final result is a tie between Kipi and Ugi (no one earns a gold point).
+
+chef leading
+# Kepe is the leading chef (with 0 gold points) simply because he's name is first in lexicographic order.
+
+
+chef add-dish Kipi ChocolateCake  			3   9  2  1    5
+
+chef add-dish Ugi OreoCookie  				3   10 1  1    6
+chef add-dish Ugi ChocolateCookie 			3   8  1  1    9
+chef add-dish Ugi ChocolateCookie 			3   8  1  1    6
+
+
+#Kipi's dishes: ChocolateCake, LettuceSalad, PotatoSalad.
+#Ugi's dishes: ChocolateCookie, OreoCookie, ChocolateCookie.
+#Oscar's dishes:  MudCake, MudCake, MudCake, MudCake.
+#Judges: Arik, Bents
+
+
+chef compete Kipi Ugi
+# Ugi's OreoCookie is inedible, and so from the second dish on both judges hate Ugi and vote in favor of Kipi's dishes.
+# So kipi wins.
+
+
+chef leading
+# Kepe is the leading chef (with 1 gold point)
+
+
+chef add-dish Kipi LettuceSalad  			2   1  4  4    4
+chef add-dish Kipi PotatoSalad 				1   1  4  4    3
+chef add-dish Kipi ChocolateCake  			3   9  2  1    5
+
+
+chef add-dish Ugi ChocolateCookie 			3   8  1  1    9
+chef add-dish Ugi ChocolateCookie 			3   8  1  1    9
+chef add-dish Ugi ChocolateCookie 			3   8  1  1    9
+
+
+judge add Dudu 1
+
+#Kipi's dishes: ChocolateCake, LettuceSalad, PotatoSalad.
+#Ugi's dishes: ChocolateCookie, ChocolateCookie, ChocolateCookie.
+#Oscar's dishes:  MudCake, MudCake, MudCake, MudCake.
+#Judges: Arik (hates Ugi), Bents (hates Ugi), Dudu.
+
+
+chef compete Kipi Ugi
+#Kipi wins becuase 2 of the 3 judges hate Ugi and always vote in favor of Kipi.
+
+chef leading
+# Kepe is the leading chef (with 2 gold point)
+
+
+chef add-dish Kipi LettuceSalad  			2   1  4  4    4
+chef add-dish Kipi PotatoSalad 				1   1  4  4    3
+chef add-dish Kipi ChocolateCake  			3   9  2  1    5
+chef add-dish Kipi ChocolateCake  			3   9  2  1    5
+
+
+#Kipi's dishes: ChocolateCake, ChocolateCake, LettuceSalad, PotatoSalad.
+#Ugi's dishes: [none]
+#Oscar's dishes:  MudCake, MudCake, MudCake, MudCake.
+#Judges: Arik (hates Ugi), Bents (hates Ugi), Dudu.
+
+
+chef compete Kipi Oscar
+#Arik and Bents (in that order) furiously resign after 2 dish pairs (because Oscar's mud cakes are inedible).
+#And until that point, Judge Dudu didn't taste anything (because hes opinion wasn't required after Arik and Bents already voted in favour of Kipi).
+#After Arik and Bents resign, Dudu taste 2 inedbile mud cakes.
+
+
+chef leading
+# Kepe is the leading chef (with 3 gold point)
+
+
+chef add-dish Oscar MudCake 				3 	1  1  10   4 
+chef add-dish Oscar MudCake 				3 	1  1  10   4
+
+chef add-dish Kipi LettuceSalad  			2   1  4  4    4
+chef add-dish Kipi PotatoSalad 				1   1  4  4    3
+
+
+#Kipi's dishes: LettuceSalad, PotatoSalad.
+#Ugi's dishes: [none]
+#Oscar's dishes:  MudCake, MudCake.
+#Judges: Dudu (hates Oscar).
+
+chef compete Kipi Oscar
+#We should get an error because all judges (Dudu in our case) resigned before the competition was over. So neither of the two chefs earns a gold point.
+
+chef leading
+# Kepe is the leading chef (with 3 gold point)
+
+
+
+#Kipi's dishes: PotatoSalad.
+#Ugi's dishes: [none]
+#Oscar's dishes:  MudCake.
+#Judges: [none].
+
+chef top-dish Kipi
+#The following will fail because Ugi has no prepared dishes.
+chef top-dish Ugi
+chef top-dish Oscar
+
+
+judge add Nuli 2
+
+judge print 
+#Nuli is the only judge
+
+
+reset
+#So now we're of to a fresh start.
+
+judge print 
+#This should fail (no judges in the system).
+
+chef leading
+#This should fail (no chef in the system).
+
+
+##############################################################
+#Now we'll repeat the beginning of test1:
+
+chef add Kipi
+# Kipi is a great chef.
+chef add Oscar
+# Oscar's favourite food is a mud cake, made with a generous amount of salt!
+
+chef add-dish Kipi Salad 			1      1  1  3     9 
+chef add-dish Kipi ChocolateCake    3      9  1  1     5
+chef add-dish Oscar MudCake 		3 	   1  1  10    4
+
+chef top-dish Kipi
+
+judge add Bents 2
+
+chef compete Kipi Oscar
+# poor Judge Bents spits Oscar's mud cake with disgust. He now hates Oscar.
+# Kipi won a gold point.
+
+chef leading
+# Kipi has 1 gold point, and Oscar has none.
+
+
