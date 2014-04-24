@@ -11,6 +11,7 @@ typedef enum DISH_TYPE {
 
 typedef enum dishResult {
 	DISH_OUT_OF_MEMORY,
+	DISH_NULL_ARGUMENT,
 	DISH_BAD_PARAM,
 	DISH_SUCCESS
 } dishResult;
@@ -18,7 +19,7 @@ typedef enum dishResult {
 typedef struct t_dish {
 	DISH_TYPE type;
 	int sweetness, sourness, saltiness;
-} Dish;
+} * Dish;
 
 
 /********************************
@@ -27,5 +28,7 @@ typedef struct t_dish {
 ********************************/
 
 Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result);
+void dishDestroy(Dish dish);
+Dish dishCopy(Dish source, dishResult * result);
 
 #endif // _DISH_H

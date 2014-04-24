@@ -9,7 +9,7 @@ typedef enum chefResult {
 	CHEF_NULL_ARGUMENT,
 	CHEF_BAD_PRIORITY,
 	CHEF_SUCCESS
-};
+} chefResult;
 
 typedef struct t_chef {
 	char * name;
@@ -19,7 +19,7 @@ typedef struct t_chef {
 
 Chef chefCreate(char * const name, chefResult * result);
 void chefDestroy(Chef chef);
-chefResult chefAddDish(Dish dish, Chef chef);
+chefResult chefAddDish(Dish dish, Chef chef, int priority);
 
 /********************************
 	isSameChef

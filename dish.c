@@ -12,7 +12,13 @@ static bool outOfBounds(int value, int min, int max) {
 }
 
 Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result) {
-	Dish dish;
+	Dish dish = (Dish)malloc(sizeof(*dish));
+	if (dish == NULL) {
+		if (result != NULL) {
+			*result = DISH_OUT_OF_MEMORY;
+			}
+		return dish;
+	}
 	if (outOfBounds(sweetness,0,10) || 
 									outOfBounds(sourness,0,10) ||
 									outOfBounds(saltiness,0,10) ||
@@ -22,12 +28,27 @@ Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dish
 		}
 		return dish;
 	}
-	dish.sweetness = sweetness;
-	dish.sourness = sourness;
-	dish.saltiness = saltiness;
-	dish.type = type;
+	dish->sweetness = sweetness;
+	dish->sourness = sourness;
+	dish->saltiness = saltiness;
+	dish->type = type;
 	if (result != NULL) {
 		*result = DISH_SUCCESS;
 	}
 	return dish;
+}
+
+Dish dishCopy(Dish source, dishResult * result) {
+	if (source == NULL) {
+		if (result != NULL) {
+			*result = DISH_NULL_ARGUMENT;
+		}
+		return NULL;
+	}
+	return(dishCreate(source->type,source->sweetness,source->sourness,
+						source->saltiness,result));
+	}
+	
+void dishDestroy(Dish dish) {
+	free(dish);
 }
