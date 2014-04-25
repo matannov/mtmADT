@@ -1,6 +1,4 @@
 #include "chef.h"
-#include "dish.h"
-#include "priority_queue.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -55,7 +53,7 @@ chefResult chefAddDish(Dish dish, Chef chef, int priority) {
 	if (chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	if (priority < 0) {
+	if (priority < 1) {
 		return CHEF_BAD_PRIORITY;
 	}
 	if (priorityQueueAdd(chef->dishes,(void*)(&dish),priority) == PRIORITY_QUEUE_OUT_OF_MEMORY) {
