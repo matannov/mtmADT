@@ -1,6 +1,11 @@
 #ifndef _TOURNAMENT_H
 #define _TOURNAMENT_H
 
+#define SAFE_ASSIGN(ptr,val) \
+	if ((ptr) != NULL) { \
+		*(ptr) = val;	\
+		}
+
 #include "dish.h"
 #include "chef.h"
 #include "judge.h"
@@ -9,6 +14,8 @@
 
 typedef enum {
 	TOURNAMENT_OUT_OF_MEMORY,
+	TOURNAMENT_NULL_ARG,
+	TOURNAMENT_CHEF_ALREADY_EXISTS,
 	TOURNAMENT_SUCCESS
 } tournamentResult
 
@@ -19,8 +26,8 @@ typedef struct t_tournament {
 
 Tournament tournamentCreate(tournamentResult * result);
 void tournamentDestroy(Tournament tournament);
-tournamentResult addChef(char * const name, int length, Tournament tournament);
-tournamentResult leadingChef(Tournament tournament);
+tournamentResult addChef(char * const name, Tournament tournament);
+tournamentResult leadingChef(Tournament tournament, Chef * leader);
 tournamentResult addJudge(char * const nickname, int preference, Tournament tournament);
 
 #endif // _TOURNAMENT_H

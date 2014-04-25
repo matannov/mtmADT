@@ -34,6 +34,7 @@ Judge judgeCreate(char * const nickname, int preference, judgeResult * result) {
 	judge->nickname = (char*)malloc(sizeof(char)*(strlen(nickname)+1));
 	judge->hatedChefs = setCreate(&copyChef,&destroyChef,&compareChefs);
 	if ((judge->nickname == NULL) || (judge->hatedChefs == NULL)) {
+		setDestroy(judge->hatedChefs);
 		if (result != NULL) {
 			*result = JUDGE_OUT_OF_MEMORY;
 		}
