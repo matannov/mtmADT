@@ -23,7 +23,7 @@ static void destroyDish(PriorityQueueElement dish) {
 	dishDestroy((Dish)dish);
 }
 
-Chef chefCreate(char * const name, chefResult * result) {
+Chef chefCreate(char * const name, ChefResult * result) {
 	Chef chef = (Chef)malloc(sizeof(*chef));
 	if (chef == NULL) {
 		chefCreate_return(CHEF_OUT_OF_MEMORY,chef)
@@ -49,7 +49,7 @@ void chefDestroy(Chef chef) {
 	free(chef);
 }
 
-chefResult chefAddDish(Dish dish, Chef chef, int priority) {
+ChefResult chefAddDish(Dish dish, Chef chef, int priority) {
 	if (chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
@@ -62,7 +62,7 @@ chefResult chefAddDish(Dish dish, Chef chef, int priority) {
 	return CHEF_SUCCESS;
 }
 
-chefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical) {
+ChefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical) {
 	if ((first == NULL) || (second == NULL) || (chefsAreIdentical == NULL)) {
 		return CHEF_NULL_ARGUMENT;
 	}

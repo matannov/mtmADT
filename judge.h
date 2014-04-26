@@ -2,13 +2,16 @@
 #define _JUDGE_H
 
 #include "chef.h"
+#include "set.h"
 
-typedef enum judgeResult {
+#define MAX_BAD_TASTING 2
+
+typedef enum {
 	JUDGE_OUT_OF_MEMORY,
 	JUDGE_NULL_ARG,
 	JUDGE_ALREADY_HATES,
 	JUDGE_SUCCESS
-};
+} judgeResult;
 
 typedef struct t_judge {
 	char * nickname;

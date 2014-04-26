@@ -1,19 +1,21 @@
+#include <stdlib.h>
+#include <string.h>
 #include "judge.h"
 
-static SetElement copyChef(char * chef) {
+static SetElement copyChef(void* chef) {
 	if (chef == NULL) {
 		return NULL;
 	}
-	char * copy = (char*)malloc(sizeof(char)*(strlen(chef)+1));
-	strcpy(copy,chef);
+	char * copy = malloc(strlen(chef)+1);
+	strcpy(copy, chef);
 	return copy;
 }
 
-static void destroyChef(char * chef) {
+static void destroyChef(void* chef) {
 	free(chef);
 }
 
-static int compareChefs(char * first, char * second) {
+static int compareChefs(void* first, void* second) {
 	return strcmp(first,second);
 }
 
@@ -31,8 +33,8 @@ Judge judgeCreate(char * const nickname, int preference, judgeResult * result) {
 		}
 		return judge;
 	}
-	judge->nickname = (char*)malloc(sizeof(char)*(strlen(nickname)+1));
-	judge->hatedChefs = setCreate(&copyChef,&destroyChef,&compareChefs);
+	judge->nickname = malloc(strlen(nickname)+1);
+	judge->hatedChefs = setCreate(&copyChef, &destroyChef, &compareChefs);
 	if ((judge->nickname == NULL) || (judge->hatedChefs == NULL)) {
 		setDestroy(judge->hatedChefs);
 		if (result != NULL) {
@@ -51,22 +53,23 @@ Judge judgeCreate(char * const nickname, int preference, judgeResult * result) {
 
 void judgeDestroy(Judge judge) {
 	if (judge != NULL) {
-		free(judge->nickname)
+		free(judge->nickname);
+	}
 }
 
 judgeResult addHatedChef(char * const chefName, Judge judge, bool * judgeQuits) {
 	if ((chefName == NULL) || (judge == NULL) || (judgeQuits == NULL)) {
 		return JUDGE_NULL_ARG;
 	}
-	if (badTastings == 2) {
+	if (judge->badTastings == MAX_BAD_TASTING) {
 		*judgeQuits = true;
 	}
 	else {
 		*judgeQuits = false;
 	}
-	if (setAdd(chefName,judge->hatedChefs) == SET_ITEM_ALREADY_EXISTS) {
+	if (setAdd(judge->hatedChefs, chefName) == SET_ITEM_ALREADY_EXISTS) {
 		return JUDGE_ALREADY_HATES; // is this an error?
 	}
-	badTastings++;
+	judge->badTastings++;
 	return JUDGE_SUCCESS;
 }

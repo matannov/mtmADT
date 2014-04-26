@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include "tournament.h"
+
 Tournament tournamentCreate(tournamentResult * result) {
 	Tournament tournament = (Tournament)malloc(sizeof(*tournament));
 	if (tournament == NULL) {
@@ -27,12 +30,12 @@ tournamentResult addChef(char * const name, Tournament tournament) {
 	if ((name == NULL) || (tournament == NULL)) {
 		return TOURNAMENT_NULL_ARG;
 	}
-	chefResult result;
-	Chef chef = chefCreate(name,&result);
-	if (result == CHEF_OUT_OF_MEMORY) {
+	ChefResult chefResult;
+	Chef chef = chefCreate(name, &chefResult);
+	if (chefResult == CHEF_OUT_OF_MEMORY) {
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
-	setResult result = setAdd(chef,tournament->chefs);
+	SetResult result = setAdd(tournament->chefs, chef);
 	if (result == SET_ITEM_ALREADY_EXISTS) {
 		chefDestroy(chef);
 		return TOURNAMENT_CHEF_ALREADY_EXISTS;
@@ -50,7 +53,7 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	}
 	Chef best = (Chef)setGetFirst(tournament->chefs);
 	SET_FOREACH(Chef,chef,tournament->chefs) {
-		if (isBetter(chef,best)) {
+		if (isBetter(chef,best)) { //todo isBetter?
 			best = chef;
 		}
 	}
@@ -58,6 +61,8 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	return TOURNAMENT_SUCCESS;
 }
 
+//todo
 tournamentResult addJudge(char * const nickname, int preference, Tournament tournament) {
 	
+	return TOURNAMENT_SUCCESS;
 }

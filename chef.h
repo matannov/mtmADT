@@ -4,12 +4,12 @@
 #include "dish.h"
 #include "priority_queue.h"
 
-typedef enum chefResult {
+typedef enum {
 	CHEF_OUT_OF_MEMORY,
 	CHEF_NULL_ARGUMENT,
 	CHEF_BAD_PRIORITY,
 	CHEF_SUCCESS
-} chefResult;
+} ChefResult;
 
 typedef struct t_chef {
 	char * name;
@@ -17,9 +17,9 @@ typedef struct t_chef {
 	int points;
 } * Chef;
 
-Chef chefCreate(char * const name, chefResult * result);
+Chef chefCreate(char * const name, ChefResult * result);
 void chefDestroy(Chef chef);
-chefResult chefAddDish(Dish dish, Chef chef, int priority);
+ChefResult chefAddDish(Dish dish, Chef chef, int priority);
 
 /********************************
 	isSameChef
@@ -29,6 +29,6 @@ chefResult chefAddDish(Dish dish, Chef chef, int priority);
 	and false otherwise
 ********************************/
 
-chefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical);
+ChefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical);
 
 #endif // _CHEF_H

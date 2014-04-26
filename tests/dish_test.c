@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "../dish.h"
-#include "../sampleUnitTest/test_utilities.h"
+#include "test_utilities.h"
 
 #define ASSERT_BAD_PARAM(val) ASSERT_TEST(val == DISH_BAD_PARAM)
 #define ASSERT_SUCCESS(val) ASSERT_TEST(val == DISH_SUCCESS)

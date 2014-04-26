@@ -3,8 +3,8 @@
 
 #define SAFE_ASSIGN(ptr,val) \
 	if ((ptr) != NULL) { \
-		*(ptr) = val;	\
-		}
+		*(ptr) = val; \
+	}
 
 #include "dish.h"
 #include "chef.h"
@@ -17,7 +17,7 @@ typedef enum {
 	TOURNAMENT_NULL_ARG,
 	TOURNAMENT_CHEF_ALREADY_EXISTS,
 	TOURNAMENT_SUCCESS
-} tournamentResult
+} tournamentResult;
 
 typedef struct t_tournament {
 	Set chefs;
