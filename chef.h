@@ -20,6 +20,7 @@ typedef struct t_chef {
 Chef chefCreate(char * const name, ChefResult * result);
 void chefDestroy(Chef chef);
 ChefResult chefAddDish(Dish dish, Chef chef, int priority);
+ChefResult chefIsBetter(Chef first, Chef second, bool * firstIsBetter);
 
 /********************************
 	isSameChef

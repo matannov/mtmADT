@@ -53,7 +53,7 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	}
 	Chef best = (Chef)setGetFirst(tournament->chefs);
 	SET_FOREACH(Chef,chef,tournament->chefs) {
-		if (isBetter(chef,best)) { //todo isBetter?
+		if (chefIsBetter(chef,best)) {
 			best = chef;
 		}
 	}
@@ -61,8 +61,18 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	return TOURNAMENT_SUCCESS;
 }
 
-//todo
 tournamentResult addJudge(char * const nickname, int preference, Tournament tournament) {
-	
+	if ((nickname == NULL) || (tournament == NULL)) {
+		return TOURNAMENT_NULL_ARG;
+	}
+	judgeResult result;
+	Judge judge = judgeCreate(nickname, preference &result);
+	if (result == JUDGE_BAD_PREFERENCE) {
+		return TOURNAMENT_BAD_PREFERENCE;
+	}
+	if ((listAdd(judge,tournament->judges) != LIST_SUCCESS)) {
+		judgeDestroy(judge);
+		return TOURNAMENT_OUT_OF_MEMORY;
+	}
 	return TOURNAMENT_SUCCESS;
 }

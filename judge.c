@@ -1,6 +1,14 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include "judge.h"
+
+static bool validPreference(int preference) {
+	if ((preference < 1) || (preference > MAX_PREFERENCE)) {
+		return false;
+	}
+	return true;
+}
 
 static SetElement copyChef(void* chef) {
 	if (chef == NULL) {
@@ -22,32 +30,31 @@ static int compareChefs(void* first, void* second) {
 Judge judgeCreate(char * const nickname, int preference, judgeResult * result) {
 	Judge judge = (Judge)malloc(sizeof(*judge));
 	if (judge == NULL) {
-		if (result != NULL) {
-			*result = JUDGE_OUT_OF_MEMORY;
-		}
-		return judge;
+		SAFE_ASSIGN(result,JUDGE_OUT_OF_MEMORY)
+		return NULL;
 	}
 	if (nickname == NULL) {
-		if (result != NULL) {
-			*result = JUDGE_NULL_ARG;
-		}
-		return judge;
+		SAFE_ASSIGN(result,JUDGE_NULL_ARG)
+		judgeDestroy(judge);
+		return NULL;
 	}
 	judge->nickname = malloc(strlen(nickname)+1);
 	judge->hatedChefs = setCreate(&copyChef, &destroyChef, &compareChefs);
 	if ((judge->nickname == NULL) || (judge->hatedChefs == NULL)) {
 		setDestroy(judge->hatedChefs);
-		if (result != NULL) {
-			*result = JUDGE_OUT_OF_MEMORY;
-		}
-		return judge;
+		SAFE_ASSIGN(result,JUDGE_OUT_OF_MEMORY)
+		judgeDestroy(judge)
+		return NULL;
 	}
 	strcpy(judge->nickname, nickname);
-	judge->preference = preference;
-	if (result != NULL) {
-		*result = JUDGE_SUCCESS;
+	if (!validPreference(preference)) {
+		SAFE_ASSIGN(result,JUDGE_BAD_PREFERENCE)
+		judgeDestroy(judge);
+		return NULL;
 	}
+	judge->preference = preference;
 	judge->badTastings = 0;
+	SAFE_ASSIGN(result,JUDGE_SUCCESS)
 	return judge;
 }
 

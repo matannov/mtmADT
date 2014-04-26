@@ -62,6 +62,21 @@ ChefResult chefAddDish(Dish dish, Chef chef, int priority) {
 	return CHEF_SUCCESS;
 }
 
+bool chefIsBetter(Chef first, Chef second) {
+	if ((first == NULL) || (second == NULL)) {
+		return false;
+	}
+	if (first.points > second.points) {
+		return true;
+	}
+	else if ((first.points == second.points) && (strcmp(first.name,second.name) > 0)) { // add chefGetName?
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 ChefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical) {
 	if ((first == NULL) || (second == NULL) || (chefsAreIdentical == NULL)) {
 		return CHEF_NULL_ARGUMENT;
