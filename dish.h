@@ -17,6 +17,7 @@ typedef enum dishResult {
 } dishResult;
 
 typedef struct t_dish {
+	char * name;
 	DISH_TYPE type;
 	int sweetness, sourness, saltiness;
 } * Dish;
@@ -27,8 +28,9 @@ typedef struct t_dish {
 	takes 
 ********************************/
 
-Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result);
+Dish dishCreate(char * name, DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result);
 void dishDestroy(Dish dish);
 Dish dishCopy(Dish source, dishResult * result);
+char * dishGetName(Dish dish);
 
 #endif // _DISH_H

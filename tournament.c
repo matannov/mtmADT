@@ -51,6 +51,9 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	if ((tournament == NULL) || (leader == NULL)) {
 		return TOURNAMENT_NULL_ARG;
 	}
+	if (setGetSize(tournament->chefs) == 0) {
+		return TOURNAMENT_HAS_NO_CHEFS;
+	}
 	Chef best = (Chef)setGetFirst(tournament->chefs);
 	SET_FOREACH(Chef,chef,tournament->chefs) {
 		if (chefIsBetter(chef,best)) {

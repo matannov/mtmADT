@@ -77,6 +77,14 @@ bool chefIsBetter(Chef first, Chef second) {
 	}
 }
 
+char * chefGetName(Chef chef) {
+	return chef->name;
+}
+
+int chefGetPoints(Chef chef) {
+	return chef->points;
+}
+
 ChefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical) {
 	if ((first == NULL) || (second == NULL) || (chefsAreIdentical == NULL)) {
 		return CHEF_NULL_ARGUMENT;
