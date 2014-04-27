@@ -1,1 +1,5 @@
+#include "commonDefs.h"
 #include "tournament.h"
+#include "judge.h"
+#include "chef.h"
+#include "dish.h"

@@ -1,6 +1,7 @@
 #include "dish.h"
 #include "stdbool.h"
 #include "stdlib.h"
+#include "string.h"
 
 static bool outOfBounds(int value, int min, int max) {
 	if ((value < min) || (value > max)) { 
@@ -45,11 +46,11 @@ Dish dishCreate(char * name, DISH_TYPE type, int sweetness, int sourness, int sa
 Dish dishCopy(Dish source, dishResult * result) {
 	if (source == NULL) {
 		if (result != NULL) {
-			*result = DISH_NULL_ARGUMENT;
+			*result = DISH_NULL_ARG;
 		}
 		return NULL;
 	}
-	return(dishCreate(source->type,source->sweetness,source->sourness,
+	return(dishCreate(source->name,source->type,source->sweetness,source->sourness,
 						source->saltiness,result));
 	}
 	

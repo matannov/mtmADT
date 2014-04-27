@@ -1,6 +1,7 @@
 #ifndef _CHEF_H
 #define _CHEF_H
 
+#include "commonDefs.h"
 #include "dish.h"
 #include "priority_queue.h"
 
@@ -19,8 +20,9 @@ typedef struct t_chef {
 
 Chef chefCreate(char * const name, ChefResult * result);
 void chefDestroy(Chef chef);
+Chef chefCopy(Chef chef);
 ChefResult chefAddDish(Dish dish, Chef chef, int priority);
-ChefResult chefIsBetter(Chef first, Chef second, bool * firstIsBetter);
+bool chefIsBetter(Chef first, Chef second);
 char * chefGetName(Chef chef);
 int chefGetPoints(Chef chef);
 

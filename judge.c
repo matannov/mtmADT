@@ -43,7 +43,7 @@ Judge judgeCreate(char * const nickname, int preference, judgeResult * result) {
 	if ((judge->nickname == NULL) || (judge->hatedChefs == NULL)) {
 		setDestroy(judge->hatedChefs);
 		SAFE_ASSIGN(result,JUDGE_OUT_OF_MEMORY)
-		judgeDestroy(judge)
+		judgeDestroy(judge);
 		return NULL;
 	}
 	strcpy(judge->nickname, nickname);

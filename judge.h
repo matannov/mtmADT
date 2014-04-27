@@ -1,10 +1,12 @@
 #ifndef _JUDGE_H
 #define _JUDGE_H
 
+#include "commonDefs.h"
 #include "chef.h"
 #include "set.h"
 
 #define MAX_BAD_TASTING 2
+#define MAX_PREFERENCE 3
 
 typedef enum {
 	JUDGE_OUT_OF_MEMORY,

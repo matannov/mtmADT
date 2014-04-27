@@ -1,6 +1,8 @@
 #ifndef _DISH_H
 #define _DISH_H
 
+#include "commonDefs.h"
+
 #define NUM_DISH_TYPES 3
 
 typedef enum DISH_TYPE {
@@ -11,7 +13,7 @@ typedef enum DISH_TYPE {
 
 typedef enum dishResult {
 	DISH_OUT_OF_MEMORY,
-	DISH_NULL_ARGUMENT,
+	DISH_NULL_ARG,
 	DISH_BAD_PARAM,
 	DISH_SUCCESS
 } dishResult;

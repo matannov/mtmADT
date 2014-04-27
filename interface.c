@@ -63,7 +63,7 @@ void printLeading (Tournament tournament) {
 void printOutOfMemoryAndDie(Tournament tournament) {
 	tournamentDestroy(tournament);
 	mtmPrintErrorMessage(STDERR_STREAM, MTM_OUT_OF_MEMORY);
-	// quit somehow
+	exit();
 }
 
 void addChef (Tournament tournament) {
@@ -148,10 +148,11 @@ MtmErrorCode proccessCommand (char * line, Tournament tournament) {
 int main(int argc,char *argv[]) { // add support for input & output files
 	Tournament tournament;
 	char line[MAX_LEN+1];
+	strcpy(line,"");
 	while ((fgets(line, sizeof(line), STDIN_STREAM)) != NULL) {
 		proccessCommand(line,tournament);
 	}
-	tournamentDestroy(tournament)
+	tournamentDestroy(tournament);
 	return 0;
 }
 
