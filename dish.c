@@ -11,7 +11,7 @@ static bool outOfBounds(int value, int min, int max) {
 	}
 }
 
-Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result) {
+Dish dishCreate(DishType type, int sweetness, int sourness, int saltiness, DishResult * result) {
 	Dish dish = (Dish)malloc(sizeof(*dish));
 	if (dish == NULL) {
 		if (result != NULL) {
@@ -22,7 +22,7 @@ Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dish
 	if (outOfBounds(sweetness,0,10) || 
 									outOfBounds(sourness,0,10) ||
 									outOfBounds(saltiness,0,10) ||
-									outOfBounds(type,0,NUM_DISH_TYPES-1)) {
+									outOfBounds(type,0,NUM_DishTypeS-1)) {
 		 if (result != NULL) {
 			*result = DISH_BAD_PARAM;
 		}
@@ -38,7 +38,7 @@ Dish dishCreate(DISH_TYPE type, int sweetness, int sourness, int saltiness, dish
 	return dish;
 }
 
-Dish dishCopy(Dish source, dishResult * result) {
+Dish dishCopy(Dish source, DishResult * result) {
 	if (source == NULL) {
 		if (result != NULL) {
 			*result = DISH_NULL_ARGUMENT;

@@ -11,7 +11,7 @@
 	return chef;
 	
 static PriorityQueueElement copyDish(PriorityQueueElement dish) {
-	dishResult result;
+	DishResult result;
 	PriorityQueueElement copy = (PriorityQueueElement)(dishCopy((Dish)dish,&result));
 	if (result != DISH_SUCCESS) {
 		return NULL;
