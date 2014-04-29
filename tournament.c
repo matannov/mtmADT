@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
+#include "chef.h"
+#include "judge.h"
+#include "commonDefs.h"
 #include "tournament.h"
+
 
 static ListElement copyChef(ListElement chef) {
 	return chefCopy(chef);

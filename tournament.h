@@ -1,10 +1,6 @@
 #ifndef _TOURNAMENT_H
 #define _TOURNAMENT_H
 
-#include "commonDefs.h"
-#include "dish.h"
-#include "chef.h"
-#include "judge.h"
 #include "set.h"
 #include "list.h"
 
