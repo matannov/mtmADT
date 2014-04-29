@@ -9,6 +9,7 @@ typedef enum {
 	CHEF_OUT_OF_MEMORY,
 	CHEF_NULL_ARGUMENT,
 	CHEF_BAD_PRIORITY,
+	CHEF_HAS_NO_DISHES,
 	CHEF_SUCCESS
 } ChefResult;
 
@@ -25,6 +26,7 @@ ChefResult chefAddDish(Dish dish, Chef chef, int priority);
 bool chefIsBetter(Chef first, Chef second);
 char * chefGetName(Chef chef);
 int chefGetPoints(Chef chef);
+ChefResult chefGetTopDish(Chef chef, char ** dishName);
 
 /********************************
 	isSameChef

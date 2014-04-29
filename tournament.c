@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "tournament.h"
 
 static ListElement copyChef(ListElement chef) {
@@ -53,7 +54,7 @@ void tournamentDestroy(Tournament tournament) {
 	free(tournament);
 }
 
-tournamentResult addChef(char * const name, Tournament tournament) {
+tournamentResult tournamentAddChef(char * const name, Tournament tournament) {
 	if ((name == NULL) || (tournament == NULL)) {
 		return TOURNAMENT_NULL_ARG;
 	}
@@ -91,7 +92,7 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult addJudge(char * const nickname, int preference, Tournament tournament) {
+tournamentResult tournamentAddJudge(char * const nickname, int preference, Tournament tournament) {
 	if ((nickname == NULL) || (tournament == NULL)) {
 		return TOURNAMENT_NULL_ARG;
 	}
@@ -105,4 +106,19 @@ tournamentResult addJudge(char * const nickname, int preference, Tournament tour
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
 	return TOURNAMENT_SUCCESS;
+}
+
+tournamentResult tournamentGetTopDish(char * chefName, Tournament tournament, char ** dishName) {
+	if ((chefName == NULL) || (tournament == NULL) || (dishName == NULL)) {
+		return TOURNAMENT_NULL_ARG;
+	}
+	SET_FOREACH(Chef,chef,tournament->chefs){
+		if (strcmp(chefGetName(chef),chefName) == 0) {
+			if (chefGetTopDish(chef,dishName) == CHEF_HAS_NO_DISHES) {
+				return TOURNAMENT_CHEF_HAS_NO_DISHES;
+			}
+			return TOURNAMENT_SUCCESS;
+		}
+	}
+	return TOURNAMENT_NO_SUCH_CHEF;
 }
