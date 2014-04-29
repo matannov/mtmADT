@@ -49,6 +49,20 @@ void chefDestroy(Chef chef) {
 	free(chef);
 }
 
+Chef chefCopy(Chef chef) {
+	if (chef == NULL) {
+		return NULL;
+	}
+	ChefResult result;
+	Chef copy = chefCreate(chef->name, &result);
+	if (result == CHEF_OUT_OF_MEMORY) {
+		return NULL;
+	}
+	priorityQueueDestroy(copy->dishes);
+	copy->dishes = priorityQueueCopy(chef->dishes);
+	return copy;
+}
+
 ChefResult chefAddDish(Dish dish, Chef chef, int priority) {
 	if (chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
@@ -60,6 +74,29 @@ ChefResult chefAddDish(Dish dish, Chef chef, int priority) {
 		return CHEF_OUT_OF_MEMORY;
 	}
 	return CHEF_SUCCESS;
+}
+
+bool chefIsBetter(Chef first, Chef second) {
+	if ((first == NULL) || (second == NULL)) {
+		return false;
+	}
+	if (first->points > second->points) {
+		return true;
+	}
+	else if ((first->points == second->points) && (strcmp(first->name,second->name) > 0)) { // add chefGetName?
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+char * chefGetName(Chef chef) {
+	return chef->name;
+}
+
+int chefGetPoints(Chef chef) {
+	return chef->points;
 }
 
 ChefResult isSameChef(Chef first, Chef second, bool * chefsAreIdentical) {

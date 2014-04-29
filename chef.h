@@ -1,6 +1,7 @@
 #ifndef _CHEF_H
 #define _CHEF_H
 
+#include "commonDefs.h"
 #include "dish.h"
 #include "priority_queue.h"
 
@@ -8,6 +9,7 @@ typedef enum {
 	CHEF_OUT_OF_MEMORY,
 	CHEF_NULL_ARGUMENT,
 	CHEF_BAD_PRIORITY,
+	CHEF_HAS_NO_DISHES,
 	CHEF_SUCCESS
 } ChefResult;
 
@@ -19,7 +21,12 @@ typedef struct t_chef {
 
 Chef chefCreate(char * const name, ChefResult * result);
 void chefDestroy(Chef chef);
+Chef chefCopy(Chef chef);
 ChefResult chefAddDish(Dish dish, Chef chef, int priority);
+bool chefIsBetter(Chef first, Chef second);
+char * chefGetName(Chef chef);
+int chefGetPoints(Chef chef);
+ChefResult chefGetTopDish(Chef chef, char ** dishName);
 
 /********************************
 	isSameChef

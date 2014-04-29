@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "../dish.h"
 #include "test_utilities.h"
 
@@ -9,11 +10,13 @@ bool dishCreateTest();
 
 bool dishCreateTest() {
 	dishResult * results = (dishResult*)malloc(sizeof(int)*5);
-	dishCreate(entree,-1,2,4,results);
-	dishCreate(desert,3,20,4,results+1);
-	dishCreate(appetizer,2,8,11,results+2);
-	dishCreate(5,3,2,4,results+3);
-	dishCreate(desert,3,2,4,results+4);
+	char word[10];
+	strcpy(word,"wordSoup");
+	dishCreate(word,entree,-1,2,4,results);
+	dishCreate(word,desert,3,20,4,results+1);
+	dishCreate(word,appetizer,2,8,11,results+2);
+	dishCreate(word,5,3,2,4,results+3);
+	dishCreate(word,desert,3,2,4,results+4);
 	ASSERT_BAD_PARAM(results[0]);
 	ASSERT_BAD_PARAM(results[1]);
 	ASSERT_BAD_PARAM(results[2]);

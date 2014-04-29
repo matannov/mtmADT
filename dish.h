@@ -1,24 +1,26 @@
 #ifndef _DISH_H
 #define _DISH_H
 
-#define DISH_TASTE_VALUE_MIN 1
-#define DISH_TASTE_VALUE_MAX 10
+#include "commonDefs.h"
 
-typedef enum {
-	APPETIZER,
-	ENTREE,
-	DESERT,
-} DishType;
+#define NUM_DISH_TYPES 3
 
-typedef enum {
+typedef enum DISH_TYPE {
+	appetizer,
+	entree,
+	desert,
+} DISH_TYPE;
+
+typedef enum dishResult {
 	DISH_OUT_OF_MEMORY,
-	DISH_NULL_ARGUMENT,
+	DISH_NULL_ARG,
 	DISH_BAD_PARAM,
 	DISH_SUCCESS
-} DishResult;
+} dishResult;
 
-typedef struct {
-	DishType type;
+typedef struct t_dish {
+	char * name;
+	DISH_TYPE type;
 	int sweetness, sourness, saltiness;
 } * Dish;
 
@@ -28,8 +30,9 @@ typedef struct {
 	takes 
 ********************************/
 
-Dish dishCreate(DishType type, int sweetness, int sourness, int saltiness, DishResult * result);
+Dish dishCreate(char * name, DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result);
 void dishDestroy(Dish dish);
-Dish dishCopy(Dish source, DishResult * result);
+Dish dishCopy(Dish source, dishResult * result);
+char * dishGetName(Dish dish);
 
 #endif // _DISH_H
