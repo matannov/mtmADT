@@ -3,6 +3,7 @@
 
 #include "set.h"
 #include "list.h"
+#include "chef.h"
 
 typedef enum {
 	TOURNAMENT_OUT_OF_MEMORY,
@@ -27,7 +28,7 @@ void tournamentDestroy(Tournament tournament);
 tournamentResult tournamentAddChef(char * const name, Tournament tournament);
 tournamentResult leadingChef(Tournament tournament, Chef * leader);
 tournamentResult tournamentAddJudge(char * const nickname, int preference, Tournament tournament);
-tournamentResult addDishToChef(char * chefName, char * dishName, DISH_TYPE type, int sweetness, int sourness, int saltiness, int priority, Tournament tournament); // implement
+tournamentResult addDishToChef(char * chefName, char * dishName, DishType type, int sweetness, int sourness, int saltiness, int priority, Tournament tournament); // implement
 tournamentResult tournamentGetTopDish(char * chefName, Tournament tournament, char ** dishName);
 tournamentResult tournamentGetJudges(char *** judges, int * numberOfJudges, Tournament 	tournament);
 #endif // _TOURNAMENT_H

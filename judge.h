@@ -1,7 +1,7 @@
 #ifndef _JUDGE_H
 #define _JUDGE_H
 
-#include "commonDefs.h"
+#include "common.h"
 #include "chef.h"
 #include "set.h"
 

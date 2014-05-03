@@ -24,10 +24,10 @@ static void destroyJudge(ListElement judge) {
 }
 
 static int compareChefs(ListElement first, ListElement second) {
-	if (chefIsBetter(first,second)) {
+	if (chefIsBetterRanked(first,second)) {
 		return 1;
 	}
-	if (chefIsBetter(second,first)) {
+	if (chefIsBetterRanked(second,first)) {
 		return -1;
 	}
 	return 0;
@@ -88,7 +88,7 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	}
 	Chef best = (Chef)setGetFirst(tournament->chefs);
 	SET_FOREACH(Chef,chef,tournament->chefs) {
-		if (chefIsBetter(chef,best)) {
+		if (chefIsBetterRanked(chef,best)) {
 			best = chef;
 		}
 	}

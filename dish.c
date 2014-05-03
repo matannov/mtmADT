@@ -1,66 +1,72 @@
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 #include "dish.h"
-#include "stdbool.h"
-#include "stdlib.h"
-#include "string.h"
+#include "common.h"
 
-static bool outOfBounds(int value, int min, int max) {
-	if ((value < min) || (value > max)) { 
-		return true; 
-	}
-	else {
-		return false;
-	}
-}
+#define TYPE_VALUE_MIN 0
+#define TYPE_VALUE_MAX (NUM_DISH_TYPES-1)
 
-Dish dishCreate(char * name, DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result) {
-	if (name == NULL) {
-		SAFE_ASSIGN(result,DISH_NULL_ARG)
-		return NULL;
+struct dish{
+	char name[DISH_NAME_LENGTH_MAX+1];
+	DishType type;
+	Taste taste;
+};
+
+Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result) {
+	if(name == NULL) {
+		ASSIGN_AND_RETURN(result, DISH_NULL_ARGUMENT, NULL)
 	}
-	Dish dish = (Dish)malloc(sizeof(*dish));
-	char * dishName = malloc(strlen(name)+1);
-	if ((dish == NULL) || (name == NULL)) {
-		SAFE_ASSIGN(result,DISH_OUT_OF_MEMORY)
-		free(dish);
-		free(name);
-		return NULL;
+	if(strlen(name) > DISH_NAME_LENGTH_MAX ||
+		!IN_RANGE(taste.sweetness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) || 
+		!IN_RANGE(taste.sourness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
+		!IN_RANGE(taste.saltiness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
+		!IN_RANGE(type, TYPE_VALUE_MIN, TYPE_VALUE_MAX)) {
+
+		ASSIGN_AND_RETURN(result, DISH_BAD_PARAM, NULL)
 	}
-	strcpy(dishName,name);
-	dish->name = dishName;
-	if (outOfBounds(sweetness,0,10) || 
-									outOfBounds(sourness,0,10) ||
-									outOfBounds(saltiness,0,10) ||
-									outOfBounds(type,0,NUM_DISH_TYPES-1)) {
-		SAFE_ASSIGN(result,DISH_BAD_PARAM)
-		dishDestroy(dish);
-		return NULL;
+
+	Dish dish = malloc(sizeof(*dish));
+	if(dish == NULL) {
+		ASSIGN_AND_RETURN(result, DISH_OUT_OF_MEMORY, NULL)
 	}
-	dish->sweetness = sweetness;
-	dish->sourness = sourness;
-	dish->saltiness = saltiness;
+	strcpy(dish->name, name);
+	dish->taste = taste;
 	dish->type = type;
-	SAFE_ASSIGN(result,DISH_SUCCESS)
-	return dish;
+	ASSIGN_AND_RETURN(result, DISH_SUCCESS, dish)
 }
 
-Dish dishCopy(Dish source, dishResult * result) {
-	if (source == NULL) {
-		if (result != NULL) {
-			*result = DISH_NULL_ARG;
-		}
+Dish dishCopy(Dish source) {
+	if(source == NULL) {
 		return NULL;
 	}
-	return(dishCreate(source->name,source->type,source->sweetness,source->sourness,
-						source->saltiness,result));
-	}
+	return dishCreate(source->name, source->type, source->taste, NULL);
+}
 	
 void dishDestroy(Dish dish) {
 	free(dish);
 }
 
-char * dishGetName (Dish dish) {
-	if (dish == NULL) {
-		return NULL;
+DishResult dishGetName(Dish dish, char* buffer) {
+	if(buffer == NULL || dish == NULL) {
+		return DISH_NULL_ARGUMENT;
 	}
-	return dish->name;
+	strcpy(buffer, dish->name);
+	return DISH_SUCCESS;
+}
+
+DishResult dishGetTaste(Dish dish, Taste* taste) {
+	if(dish == NULL) {
+		return DISH_NULL_ARGUMENT;
+	}
+	*taste = dish->taste;
+	return DISH_SUCCESS;
+}
+
+DishResult dishGetType(Dish dish, DishType* type) {
+	if(dish == NULL) {
+		return DISH_NULL_ARGUMENT;
+	}
+	*type = dish->type;
+	return DISH_SUCCESS;
 }

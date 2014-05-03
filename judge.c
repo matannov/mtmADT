@@ -3,6 +3,17 @@
 #include <string.h>
 #include "judge.h"
 
+/* check if dish unedible (here because it could sometime depend on the judge)*/
+static bool isDishUnedible(Dish dish) {
+	int const unedibleSweetness = 10;
+	int const unedibleSourness = 8;
+	int const unedibleSaltiness = 6;
+
+	return (dish->sweetness >= unedibleSweetness || 
+		dish->sourness >= unedibleSourness || 
+		dish->saltiness >= unedibleSaltiness)
+}
+
 static bool validPreference(int preference) {
 	if ((preference < 1) || (preference > MAX_PREFERENCE)) {
 		return false;

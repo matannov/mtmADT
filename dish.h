@@ -1,38 +1,86 @@
 #ifndef _DISH_H
 #define _DISH_H
 
-#include "commonDefs.h"
+#define DISH_NAME_LENGTH_MAX 63
+#define DISH_TASTE_PARAM_MIN 1
+#define DISH_TASTE_PARAM_MAX 10
 
-#define NUM_DISH_TYPES 3
+typedef enum {
+	APPETIZER,
+	ENTREE,
+	DESERT,
+	NUM_DISH_TYPES
+} DishType;
 
-typedef enum DISH_TYPE {
-	appetizer,
-	entree,
-	desert,
-} DISH_TYPE;
-
-typedef enum dishResult {
+typedef enum {
+	DISH_SUCCESS,
 	DISH_OUT_OF_MEMORY,
-	DISH_NULL_ARG,
-	DISH_BAD_PARAM,
-	DISH_SUCCESS
-} dishResult;
+	DISH_NULL_ARGUMENT,
+	DISH_BAD_PARAM
+} DishResult;
 
-typedef struct t_dish {
-	char * name;
-	DISH_TYPE type;
+typedef struct {
 	int sweetness, sourness, saltiness;
-} * Dish;
+} Taste;
 
+typedef struct dish* Dish;
 
-/********************************
-	dishCreate
-	takes 
-********************************/
+/*
+ * Create a new dish with given params.
+ *
+ * In case any param is invalid or if run out of memory, 
+ * an error code is set in "result".
+ * If "result" is null, no error code is returned.
+ *
+ * @param name Name for new dish. The string is copied.
+ * @param type Type of dish.
+ * @param taste Taste params of dish
+ * @param result Result success or error code.
+ * @return The new dish, NULL in case of error.
+ */
+Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result);
 
-Dish dishCreate(char * name, DISH_TYPE type, int sweetness, int sourness, int saltiness, dishResult * result);
+/*
+ * Destroy given dish.
+ *
+ * @param dish Dish to destroy, if NULL does nothing.
+ */
 void dishDestroy(Dish dish);
-Dish dishCopy(Dish source, dishResult * result);
-char * dishGetName(Dish dish);
+
+/*
+ * Create a copy of an existing dish.
+ *
+ * @param source The dish to copy.
+ * @return Dish copy, NULL in case of an error.
+ */
+Dish dishCopy(Dish source);
+
+/*
+ * Get dish name.
+ *
+ * @param dish Dish to get it's name
+ * @param buffer Name will be written here. Make sure there is enough space.
+ * @return Result success or error code.
+ */
+DishResult dishGetName(Dish dish, char* buffer);
+
+/*
+ * Get dish taste params.
+ *
+ * @param dish Dish to read it's params
+ * @param taste Taste params will be written here.
+ * @return Result success or error code.
+ */
+DishResult dishGetTaste(Dish dish, Taste* taste);
+
+/*
+ * Get dish type.
+ *
+ * @param dish Dish to read it's type
+ * @param type Dish type will be written here.
+ * @return Result success or error code.
+ */
+DishResult dishGetType(Dish dish, DishType* type);
+
 
 #endif // _DISH_H
