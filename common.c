@@ -2,12 +2,10 @@
 #include <string.h>
 #include "common.h"
 
-Result cloneString(char** strNew, const char* str) {
+char* cloneString(const char* str) {
 	char* temp = malloc(strlen(str)+1);
-	if(temp == NULL) {
-		return FAILURE;
+	if(temp != NULL) {
+		strcpy(temp, str);
 	}
-	strcpy(temp, str);
-	*strNew = temp;
-	return SUCCESS;
+	return temp;
 }
