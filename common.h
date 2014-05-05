@@ -20,7 +20,7 @@ typedef enum {SUCCESS, FAILURE} Result;
 #define IN_RANGE(value, min, max) \
 	(((value) >= (min) && (value) <= (max)) ? true : false)
 
-/* allocate a new string and copy to it. return FAILURE if out of memory */
-Result cloneString(char** strNew, const char* str);
+/* allocate a new string and copy to it. return NULL if out of memory */
+char* cloneString(const char* str);
 
 #endif

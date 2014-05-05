@@ -1,16 +1,15 @@
 #ifndef _CHEF_H
 #define _CHEF_H
 
+#include <stdbool.h>
 #include "dish.h"
 
-#define CHEF_NAME_LENGTH_MAX 63
-#define DISH_PRIORITY_MIN 0
+#define CHEF_DISH_PRIORITY_MIN 0
 
 typedef enum {
 	CHEF_SUCCESS,
 	CHEF_OUT_OF_MEMORY,
 	CHEF_NULL_ARGUMENT,
-	CHEF_BAD_PARAM,
 	CHEF_BAD_PRIORITY,
 	CHEF_HAS_NO_DISHES
 } ChefResult;
@@ -20,12 +19,10 @@ typedef struct chef* Chef;
 /*
  * Create a new chef with given name.
  *
- * In case name is invalid or if run out of memory, 
- * an error code is set in "result".
- * If "result" is null, no error code is returned.
- *
  * @param name Name for new chef. The string is copied.
  * @param result Result success or error code.
+ *	If "result" is null, no code is returned.
+ *	Error codes: CHEF_NULL_ARGUMENT, CHEF_OUT_OF_MEMORY
  * @return The new chef, NULL in case of error.
  */
 Chef chefCreate(char const* name, ChefResult* result);
@@ -41,7 +38,7 @@ void chefDestroy(Chef chef);
  * Create a copy of an existing chef.
  *
  * @param source The chef to copy.
- * @return Chef copy, NULL in case of an error.
+ * @return Chef copy, NULL in case of NULL argument or out of memory.
  */
 Chef chefCopy(Chef source);
 
@@ -51,6 +48,7 @@ Chef chefCopy(Chef source);
  * @param chef Chef to get name of
  * @param buffer Name will be written here. Make sure there is enough space.
  * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT
  */
 ChefResult chefGetName(Chef chef, char* buffer);
 
@@ -64,6 +62,7 @@ ChefResult chefGetName(Chef chef, char* buffer);
  * @param dish Dish to add. The dish is copied.
  * @param priority Priority of the dish.
  * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT, CHEF_BAD_PRIORITY, CHEF_OUT_OF_MEMORY
  */
 ChefResult chefAddDish(Chef chef, Dish dish, int priority);
 
@@ -74,6 +73,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority);
  * @param chef Chef to get the name of top dish from.
  * @param buffer Name will be written here. Make sure there is enough space.
  * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT, CHEF_HAS_NO_DISHES
  */
 ChefResult chefGetTopDish(Chef chef, char* buffer);
 
@@ -83,6 +83,7 @@ ChefResult chefGetTopDish(Chef chef, char* buffer);
  * @param chef Chef to get the points from.
  * @param points Points will be written here.
  * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT
  */
 ChefResult chefGetPoints(Chef chef, int* points);
 
@@ -96,18 +97,8 @@ ChefResult chefGetPoints(Chef chef, int* points);
  * @param second Second chef.
  * @param firstBetter Will be "true" If first chef is better, "false" otherwise 
  * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT
  */
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter);
-
-/********************************
-	isSameChef
-	takes two Chefs and a pointer to a bool
-	returns a chefResult,
-	and writes true to the bool if they have the same name,
-	and false otherwise
-********************************/
-/* why do we need this?
-ChefResult isSameChef(Chef first, Chef second, bool* areIdentical);
-*/
 
 #endif // _CHEF_H

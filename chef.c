@@ -4,8 +4,8 @@
 #include "priority_queue.h"
 #include "chef.h"
 
-struct chef{
-	char name[CHEF_NAME_LENGTH_MAX+1];
+struct chef {
+	char* name;
 	PriorityQueue dishes;
 	int points;
 };
@@ -24,20 +24,16 @@ Chef chefCreate(char const* name, ChefResult* result) {
 	if(name == NULL) {
 		ASSIGN_AND_RETURN(result, CHEF_NULL_ARGUMENT, NULL)
 	}
-	if(strlen(name) > CHEF_NAME_LENGTH_MAX) {
-		ASSIGN_AND_RETURN(result, CHEF_BAD_PARAM, NULL)
-	}
-
 	Chef chef = malloc(sizeof(*chef));
 	if(chef == NULL) {
 		ASSIGN_AND_RETURN(result, CHEF_OUT_OF_MEMORY, NULL)
 	}
+	chef->name = cloneString(name);
 	chef->dishes = priorityQueueCreate(&copyDish, &destroyDish);
-	if(chef->dishes == NULL) {
+	if(chef->name ==  NULL || chef->dishes == NULL) {
 		chefDestroy(chef);
 		ASSIGN_AND_RETURN(result, CHEF_OUT_OF_MEMORY, NULL)
 	}
-	strcpy(chef->name, name);
 	ASSIGN_AND_RETURN(result, CHEF_SUCCESS, chef)
 }
 
@@ -46,6 +42,7 @@ void chefDestroy(Chef chef) {
 		return;
 	}
 	priorityQueueDestroy(chef->dishes);
+	free(chef->name);
 	free(chef);
 }
 
@@ -59,6 +56,10 @@ Chef chefCopy(Chef source) {
 	}
 	priorityQueueDestroy(copy->dishes);
 	copy->dishes = priorityQueueCopy(source->dishes);
+	if(copy->dishes == NULL) {
+		chefDestroy(copy);
+		return NULL;
+	}
 	return copy;
 }
 
@@ -74,7 +75,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
 	if(chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	if(priority < DISH_PRIORITY_MIN) {
+	if(priority < CHEF_DISH_PRIORITY_MIN) {
 		return CHEF_BAD_PRIORITY;
 	}
 	PriorityQueueResult result = priorityQueueAdd(chef->dishes, &dish, priority);
@@ -89,7 +90,11 @@ ChefResult chefGetTopDish(Chef chef, char* buffer) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	Dish topDish = priorityQueueTop(chef->dishes);
-	strcpy(buffer, topDish->name)
+	if(topDish == NULL) {
+		return CHEF_HAS_NO_DISHES;
+	}
+	dishGetName(topDish, buffer);
+	return CHEF_SUCCESS;
 }
 
 ChefResult chefGetPoints(Chef chef, int* points) {
@@ -109,13 +114,3 @@ ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
 			strcmp(first->name, second->name) > 0));
 	return CHEF_SUCCESS;
 }
-
-/*
-ChefResult isSameChef(Chef first, Chef second, bool* areIdentical) {
-	if(first == NULL || second == NULL || areIdentical == NULL) {
-		return CHEF_NULL_ARGUMENT;
-	}
-	*areIdentical = (strcmp(first->name,second->name) == 0);
-	return CHEF_SUCCESS;
-}
-*/

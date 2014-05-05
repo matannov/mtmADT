@@ -6,12 +6,23 @@
 #include "tournament.h"
 
 
-static ListElement copyChef(ListElement chef) {
+static ListElement copyChef(SetElement chef) {
 	return chefCopy(chef);
 }
 
-static void destroyChef(ListElement chef) {
+static void destroyChef(SetElement chef) {
 	chefDestroy(chef);
+}
+
+static int compareChefs(SetElement first, SetElement second) {
+	//**should be only by name**
+	if (chefIsBetterRanked(first,second)) {
+		return 1;
+	}
+	if (chefIsBetterRanked(second,first)) {
+		return -1;
+	}
+	return 0;
 }
 
 static ListElement copyJudge(ListElement judge) {
@@ -21,16 +32,6 @@ static ListElement copyJudge(ListElement judge) {
 
 static void destroyJudge(ListElement judge) {
 	judgeDestroy(judge);
-}
-
-static int compareChefs(ListElement first, ListElement second) {
-	if (chefIsBetterRanked(first,second)) {
-		return 1;
-	}
-	if (chefIsBetterRanked(second,first)) {
-		return -1;
-	}
-	return 0;
 }
 
 Tournament tournamentCreate(tournamentResult * result) {

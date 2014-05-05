@@ -4,11 +4,8 @@
 #include "dish.h"
 #include "common.h"
 
-#define TYPE_VALUE_MIN 0
-#define TYPE_VALUE_MAX (NUM_DISH_TYPES-1)
-
-struct dish{
-	char name[DISH_NAME_LENGTH_MAX+1];
+struct dish {
+	char* name;
 	DishType type;
 	Taste taste;
 };
@@ -17,11 +14,10 @@ Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result
 	if(name == NULL) {
 		ASSIGN_AND_RETURN(result, DISH_NULL_ARGUMENT, NULL)
 	}
-	if(strlen(name) > DISH_NAME_LENGTH_MAX ||
-		!IN_RANGE(taste.sweetness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) || 
+	if(!IN_RANGE(taste.sweetness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) || 
 		!IN_RANGE(taste.sourness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
 		!IN_RANGE(taste.saltiness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
-		!IN_RANGE(type, TYPE_VALUE_MIN, TYPE_VALUE_MAX)) {
+		!IN_RANGE(type, DISH_TYPE_MIN, DISH_TYPE_MAX)) {
 
 		ASSIGN_AND_RETURN(result, DISH_BAD_PARAM, NULL)
 	}
@@ -30,10 +26,22 @@ Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result
 	if(dish == NULL) {
 		ASSIGN_AND_RETURN(result, DISH_OUT_OF_MEMORY, NULL)
 	}
-	strcpy(dish->name, name);
-	dish->taste = taste;
+	dish->name = cloneString(name);
+	if(dish->name == NULL) {
+		dishDestroy(dish);
+		ASSIGN_AND_RETURN(result, DISH_OUT_OF_MEMORY, NULL)
+	}
 	dish->type = type;
+	dish->taste = taste;
 	ASSIGN_AND_RETURN(result, DISH_SUCCESS, dish)
+}
+	
+void dishDestroy(Dish dish) {
+	if(dish == NULL) {
+		return;
+	}
+	free(dish->name);
+	free(dish);
 }
 
 Dish dishCopy(Dish source) {
@@ -41,10 +49,6 @@ Dish dishCopy(Dish source) {
 		return NULL;
 	}
 	return dishCreate(source->name, source->type, source->taste, NULL);
-}
-	
-void dishDestroy(Dish dish) {
-	free(dish);
 }
 
 DishResult dishGetName(Dish dish, char* buffer) {

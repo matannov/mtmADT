@@ -1,15 +1,16 @@
 #ifndef _DISH_H
 #define _DISH_H
 
-#define DISH_NAME_LENGTH_MAX 63
 #define DISH_TASTE_PARAM_MIN 1
 #define DISH_TASTE_PARAM_MAX 10
 
+#define DISH_TYPE_MIN 1
+#define DISH_TYPE_MAX (DISH_TYPES_END-1)
 typedef enum {
-	APPETIZER,
-	ENTREE,
-	DESERT,
-	NUM_DISH_TYPES
+	DISH_APPETIZER = DISH_TYPE_MIN,
+	DISH_ENTREE,
+	DISH_DESERT,
+	DISH_TYPES_END
 } DishType;
 
 typedef enum {
@@ -28,14 +29,12 @@ typedef struct dish* Dish;
 /*
  * Create a new dish with given params.
  *
- * In case any param is invalid or if run out of memory, 
- * an error code is set in "result".
- * If "result" is null, no error code is returned.
- *
  * @param name Name for new dish. The string is copied.
  * @param type Type of dish.
  * @param taste Taste params of dish
  * @param result Result success or error code.
+ * 	If "result" is null, it is ignored and no code is returned.
+ *	Error codes: DISH_NULL_ARGUMENT, DISH_BAD_PARAM, DISH_OUT_OF_MEMORY
  * @return The new dish, NULL in case of error.
  */
 Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result);
@@ -51,7 +50,7 @@ void dishDestroy(Dish dish);
  * Create a copy of an existing dish.
  *
  * @param source The dish to copy.
- * @return Dish copy, NULL in case of an error.
+ * @return Dish copy, NULL in case of NULL argument or out of memory.
  */
 Dish dishCopy(Dish source);
 
@@ -61,6 +60,7 @@ Dish dishCopy(Dish source);
  * @param dish Dish to get it's name
  * @param buffer Name will be written here. Make sure there is enough space.
  * @return Result success or error code.
+ *	Error codes: DISH_NULL_ARGUMENT
  */
 DishResult dishGetName(Dish dish, char* buffer);
 
@@ -70,6 +70,7 @@ DishResult dishGetName(Dish dish, char* buffer);
  * @param dish Dish to read it's params
  * @param taste Taste params will be written here.
  * @return Result success or error code.
+ *	Error codes: DISH_NULL_ARGUMENT
  */
 DishResult dishGetTaste(Dish dish, Taste* taste);
 
@@ -79,6 +80,7 @@ DishResult dishGetTaste(Dish dish, Taste* taste);
  * @param dish Dish to read it's type
  * @param type Dish type will be written here.
  * @return Result success or error code.
+ *	Error codes: DISH_NULL_ARGUMENT
  */
 DishResult dishGetType(Dish dish, DishType* type);
 
