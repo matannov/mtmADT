@@ -26,6 +26,7 @@ typedef struct t_judge {
 Judge judgeCreate(char * const nickname, int preference, judgeResult * result);
 void judgeDestroy(Judge judge);
 judgeResult addHatedChef(char * const chefName, Judge judge, bool * judgeQuits);
+char * judgeGetName(Judge judge);
 
 
 #endif // _JUDGE_H

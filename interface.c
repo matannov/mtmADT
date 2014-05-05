@@ -36,7 +36,7 @@ void reset (Tournament * tournament) {
 }
 
 void printTopDish (Tournament tournament) {
-	char * chefName = strtok(NULL," ");
+	char * chefName = strtok(NULL," \n");
 	if (chefName == NULL) {
 		printCommandLineErrorAndDie(tournament);
 	}
@@ -54,8 +54,8 @@ void printTopDish (Tournament tournament) {
 }
 
 void addJudge (Tournament tournament) {
-	char * nickname = strtok(NULL, " ");
-	int preference = atoi(strtok(NULL, " "));
+	char * nickname = strtok(NULL, " \n");
+	int preference = atoi(strtok(NULL, " \n"));
 	tournamentResult result = tournamentAddJudge(nickname, preference, tournament);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
 		printOutOfMemoryAndDie(tournament);
@@ -77,15 +77,24 @@ void printJudges (Tournament tournament) {
 
 void printLeading (Tournament tournament) {
 	Chef leader;
+	int points;
+	int nameLength;
+	char * name;
 	if	(leadingChef(tournament, &leader) == TOURNAMENT_HAS_NO_CHEFS) {
 		mtmPrintErrorMessage(stderr, MTM_NO_CHEFS);
 		return;
 	}
-	mtmPrintLeadingChef(stdout, chefGetName(leader), chefGetPoints(leader)); // implement getters
+	
+	chefGetNameLength(leader,&nameLength);
+	name = malloc(nameLength+1);
+	chefGetPoints(leader,&points);
+	chefGetName(leader,name);
+	mtmPrintLeadingChef(stdout, name, points); // implement getters
+	free(name);
 }
 
 void addChef (Tournament tournament) {
-	char * name = strtok(NULL," ");
+	char * name = strtok(NULL," \n");
 	tournamentResult result;
 	result = tournamentAddChef(name, tournament);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
@@ -97,13 +106,13 @@ void addChef (Tournament tournament) {
 }
 
 void addDish (Tournament tournament) {
-	char * chefName = strtok(NULL," ");
-	char * dishName = strtok(NULL," ");
-	int dishType = atoi(strtok(NULL," "));
-	int sweetness = atoi(strtok(NULL," "));
-	int sourness = atoi(strtok(NULL," "));
-	int saltyness = atoi(strtok(NULL," "));
-	int priority = atoi(strtok(NULL," "));
+	char * chefName = strtok(NULL," \n");
+	char * dishName = strtok(NULL," \n");
+	int dishType = atoi(strtok(NULL," \n"));
+	int sweetness = atoi(strtok(NULL," \n"));
+	int sourness = atoi(strtok(NULL," \n"));
+	int saltyness = atoi(strtok(NULL," \n"));
+	int priority = atoi(strtok(NULL," \n"));
 	tournamentResult result = addDishToChef(chefName, dishName, dishType, sweetness,
 								sourness, saltyness, priority, tournament);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
@@ -118,13 +127,18 @@ void addDish (Tournament tournament) {
 }
 	
 void proccessCommand (char * line, Tournament tournament) {
-	char * primaryCommand = strtok(line," ");
-	char * secondaryCommand = strtok(NULL," ");
+	char * primaryCommand = strtok(line," \n");
+	char * secondaryCommand = strtok(NULL," \n");
+	int comp = strcmp(primaryCommand,"reset");
+	printf("%s%d\n",primaryCommand,comp);
+
 	if (strcmp(primaryCommand,"reset") == 0) {	
-		
+		printf("reseting...\n");
 		reset(&tournament);
+		return;
 	}
-	else if (strcmp(primaryCommand,"chef") == 0) {
+
+	if (strcmp(primaryCommand,"chef") == 0) {
 		if (strcmp(secondaryCommand,"add") == 0) {
 			addChef(tournament);
 		}

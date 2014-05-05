@@ -2,6 +2,7 @@
 #define _CHEF_H
 
 #include "dish.h"
+#include <stdbool.h>
 
 #define CHEF_NAME_LENGTH_MAX 63
 #define DISH_PRIORITY_MIN 0
@@ -44,6 +45,17 @@ void chefDestroy(Chef chef);
  * @return Chef copy, NULL in case of an error.
  */
 Chef chefCopy(Chef source);
+
+/*
+ * Get length of chef's name.
+ *
+ * @param chef chef to get name's length of
+ * @param nameLength the length of the chef's name will be written here
+ * @return Result success or error code
+ *
+*/
+
+ChefResult chefGetNameLength(Chef chef, int* nameLength);
 
 /*
  * Get chef name.

@@ -62,6 +62,14 @@ Chef chefCopy(Chef source) {
 	return copy;
 }
 
+ChefResult chefGetNameLength(Chef chef, int* nameLength) {
+	if ((chef == NULL) || (nameLength == NULL)) {
+		return CHEF_NULL_ARGUMENT;
+	}
+	*nameLength = strlen(chef->name);
+	return CHEF_SUCCESS;
+}
+
 ChefResult chefGetName(Chef chef, char* buffer) {
 	if(buffer == NULL || chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
@@ -88,8 +96,12 @@ ChefResult chefGetTopDish(Chef chef, char* buffer) {
 	if(buffer == NULL || chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	Dish topDish = priorityQueueTop(chef->dishes);
-	strcpy(buffer, topDish->name)
+	Dish dish = priorityQueueTop(chef->dishes);
+	
+	if (dishGetName(dish,buffer) == DISH_NULL_ARGUMENT) {
+		return CHEF_HAS_NO_DISHES;
+	}
+	return CHEF_SUCCESS;
 }
 
 ChefResult chefGetPoints(Chef chef, int* points) {

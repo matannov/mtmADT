@@ -4,15 +4,22 @@
 #include "judge.h"
 
 /* check if dish unedible (here because it could sometime depend on the judge)*/
+/*
 static bool isDishUnedible(Dish dish) {
 	int const unedibleSweetness = 10;
 	int const unedibleSourness = 8;
 	int const unedibleSaltiness = 6;
 
-	return (dish->sweetness >= unedibleSweetness || 
-		dish->sourness >= unedibleSourness || 
-		dish->saltiness >= unedibleSaltiness)
+	Taste taste;
+	if (dishGetTaste(dish,&taste) == DISH_NULL_ARGUMENT) {
+		return JUDGE_NULL_ARG;
+	}
+	
+	return ((taste.sweetness >= unedibleSweetness) || 
+		(taste.sourness >= unedibleSourness) || 
+		(taste.saltiness >= unedibleSaltiness));
 }
+*/
 
 static bool validPreference(int preference) {
 	if ((preference < 1) || (preference > MAX_PREFERENCE)) {
@@ -90,4 +97,11 @@ judgeResult addHatedChef(char * const chefName, Judge judge, bool * judgeQuits) 
 	}
 	judge->badTastings++;
 	return JUDGE_SUCCESS;
+}
+
+char * judgeGetName(Judge judge) {
+	if (judge == NULL) {
+		return NULL;
+	}
+	return judge->nickname;
 }

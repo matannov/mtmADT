@@ -82,5 +82,15 @@ DishResult dishGetTaste(Dish dish, Taste* taste);
  */
 DishResult dishGetType(Dish dish, DishType* type);
 
+/*
+ * Get length of dish's name.
+ *
+ * @param dish Dish to read it's sweetness
+ * @param length length of the dish's name will be written here.
+ * @return Result success or error code.
+ */
+ 
+ DishResult dishGetNameLength(Dish dish, int * length);
+
 
 #endif // _DISH_H
