@@ -6,23 +6,6 @@
 #include "set.h"
 #include "judge.h"
 
-<<<<<<< HEAD
-/* check if dish unedible (here because it could sometime depend on the judge)*/
-/*
-static bool isDishUnedible(Dish dish) {
-	int const unedibleSweetness = 10;
-	int const unedibleSourness = 8;
-	int const unedibleSaltiness = 6;
-
-	Taste taste;
-	if (dishGetTaste(dish,&taste) == DISH_NULL_ARGUMENT) {
-		return JUDGE_NULL_ARG;
-	}
-	
-	return ((taste.sweetness >= unedibleSweetness) || 
-		(taste.sourness >= unedibleSourness) || 
-		(taste.saltiness >= unedibleSaltiness));
-=======
 struct judge {
 	char* nickname;
 	Set hatedChefs;
@@ -46,9 +29,11 @@ static bool isUnedibleDish(Dish dish) {
 	return (taste.sweetness >= unedibleSweetness || 
 		taste.sourness >= unedibleSourness || 
 		taste.saltiness >= unedibleSaltiness);
->>>>>>> d04935896b26175695fa28f2582ccf11977206c5
+} 
+
+void * getInedibleFunction() {
+	return &isUnedibleDish;
 }
-*/
 
 /* check if a chef is hated based on past and current unedible dish.
  * also update badTastings count */
@@ -160,7 +145,6 @@ JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2,
 	*judgeQuits = shouldQuit(judge);
 	return JUDGE_SUCCESS;
 }
-<<<<<<< HEAD
 
 char * judgeGetName(Judge judge) {
 	if (judge == NULL) {
@@ -168,5 +152,3 @@ char * judgeGetName(Judge judge) {
 	}
 	return judge->nickname;
 }
-=======
->>>>>>> d04935896b26175695fa28f2582ccf11977206c5

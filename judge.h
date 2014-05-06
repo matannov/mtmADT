@@ -46,10 +46,8 @@ Judge judgeCreate(char const* nickname, JudgeByPreference judgeByPreference,
  * @param judge Judge to destroy, if NULL does nothing.
  */
 void judgeDestroy(Judge judge);
-<<<<<<< HEAD
-judgeResult addHatedChef(char * const chefName, Judge judge, bool * judgeQuits);
+JudgeResult addHatedChef(char * const chefName, Judge judge, bool * judgeQuits);
 char * judgeGetName(Judge judge);
-=======
 
 /*
  * Create a copy of an existing judge.
@@ -95,7 +93,7 @@ JudgeResult judgeGetNickname(Judge judge, char* buffer);
  */
 JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2, 
 	char* chefName1, char* chefName2, bool* dish1Wins, bool* judgeQuits);
->>>>>>> d04935896b26175695fa28f2582ccf11977206c5
 
+void * getInedibleFunction();
 
 #endif // _JUDGE_H

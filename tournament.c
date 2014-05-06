@@ -14,7 +14,6 @@ static void destroyChef(SetElement chef) {
 	chefDestroy(chef);
 }
 
-<<<<<<< HEAD
 static ListElement copyJudge(ListElement judge) {
 	return NULL;
 	//return judgeCopy(judge); ***implement***
@@ -24,15 +23,10 @@ static void destroyJudge(ListElement judge) {
 	judgeDestroy(judge);
 }
 
-static int compareChefs(ListElement first, ListElement second) {
-	bool isBetter;
-	chefIsBetterRanked(first,second,&isBetter);
-	if (isBetter) {
-=======
 static int compareChefs(SetElement first, SetElement second) {
+	bool isBetter;
 	//**should be only by name**
-	if (chefIsBetterRanked(first,second)) {
->>>>>>> d04935896b26175695fa28f2582ccf11977206c5
+	if (chefIsBetterRanked(first,second,&isBetter)) {
 		return 1;
 	}
 	chefIsBetterRanked(second,first,&isBetter);
@@ -40,15 +34,6 @@ static int compareChefs(SetElement first, SetElement second) {
 		return -1;
 	}
 	return 0;
-}
-
-static ListElement copyJudge(ListElement judge) {
-	return NULL;
-	//return judgeCopy(judge); ***implement***
-}
-
-static void destroyJudge(ListElement judge) {
-	judgeDestroy(judge);
 }
 
 Tournament tournamentCreate(tournamentResult * result) {
@@ -120,9 +105,9 @@ tournamentResult tournamentAddJudge(char * const nickname, int preference, Tourn
 	if ((nickname == NULL) || (tournament == NULL)) {
 		return TOURNAMENT_NULL_ARG;
 	}
-	judgeResult result;
-	Judge judge = judgeCreate(nickname, preference, &result);
-	if (result == JUDGE_BAD_PREFERENCE) {
+	JudgeResult result;
+	Judge judge = judgeCreate(nickname, getInedibleFunction(), &result);
+	if (result == JUDGE_BAD_PREFERENCE_RESULT) {
 		return TOURNAMENT_BAD_PREFERENCE;
 	}
 	if ((listInsertLast(tournament->judges, judge) != LIST_SUCCESS)) {
