@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "dish.h"
+#include <stdbool.h>
 
 #define CHEF_DISH_PRIORITY_MIN 0
 
@@ -41,6 +42,17 @@ void chefDestroy(Chef chef);
  * @return Chef copy, NULL in case of NULL argument or out of memory.
  */
 Chef chefCopy(Chef source);
+
+/*
+ * Get length of chef's name.
+ *
+ * @param chef chef to get name's length of
+ * @param nameLength the length of the chef's name will be written here
+ * @return Result success or error code
+ *
+*/
+
+ChefResult chefGetNameLength(Chef chef, int* nameLength);
 
 /*
  * Get chef name.

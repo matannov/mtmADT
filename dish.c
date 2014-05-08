@@ -59,6 +59,14 @@ DishResult dishGetName(Dish dish, char* buffer) {
 	return DISH_SUCCESS;
 }
 
+DishResult dishGetNameLength(Dish dish, int * length) {
+	if ((dish == NULL) || (length == NULL)) {
+		return DISH_NULL_ARGUMENT;
+	}
+	*length = strlen(dish->name);
+	return DISH_SUCCESS;
+}
+
 DishResult dishGetTaste(Dish dish, Taste* taste) {
 	if(taste == NULL || dish == NULL) {
 		return DISH_NULL_ARGUMENT;

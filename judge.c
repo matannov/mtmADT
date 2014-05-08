@@ -29,6 +29,10 @@ static bool isUnedibleDish(Dish dish) {
 	return (taste.sweetness >= unedibleSweetness || 
 		taste.sourness >= unedibleSourness || 
 		taste.saltiness >= unedibleSaltiness);
+} 
+
+void * getInedibleFunction() {
+	return &isUnedibleDish;
 }
 
 /* check if a chef is hated based on past and current unedible dish.
@@ -140,4 +144,11 @@ JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2,
 		isNamePrior(chefName1, chefName2)))));
 	*judgeQuits = shouldQuit(judge);
 	return JUDGE_SUCCESS;
+}
+
+char * judgeGetName(Judge judge) {
+	if (judge == NULL) {
+		return NULL;
+	}
+	return judge->nickname;
 }

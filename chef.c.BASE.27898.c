@@ -4,12 +4,12 @@
 #include "priority_queue.h"
 #include "chef.h"
 
-struct chef {
-	char* name;
+struct chef{
+	char name[CHEF_NAME_LENGTH_MAX+1];
 	PriorityQueue dishes;
 	int points;
 };
-
+	
 /* wrap dishCopy for use in priority queue */
 static PriorityQueueElement copyDish(PriorityQueueElement dish) {
 	return (PriorityQueueElement)dishCopy((Dish)dish);
@@ -24,16 +24,20 @@ Chef chefCreate(char const* name, ChefResult* result) {
 	if(name == NULL) {
 		ASSIGN_AND_RETURN(result, CHEF_NULL_ARGUMENT, NULL)
 	}
+	if(strlen(name) > CHEF_NAME_LENGTH_MAX) {
+		ASSIGN_AND_RETURN(result, CHEF_BAD_PARAM, NULL)
+	}
+
 	Chef chef = malloc(sizeof(*chef));
 	if(chef == NULL) {
 		ASSIGN_AND_RETURN(result, CHEF_OUT_OF_MEMORY, NULL)
 	}
-	chef->name = cloneString(name);
 	chef->dishes = priorityQueueCreate(&copyDish, &destroyDish);
-	if(chef->name ==  NULL || chef->dishes == NULL) {
+	if(chef->dishes == NULL) {
 		chefDestroy(chef);
 		ASSIGN_AND_RETURN(result, CHEF_OUT_OF_MEMORY, NULL)
 	}
+	strcpy(chef->name, name);
 	ASSIGN_AND_RETURN(result, CHEF_SUCCESS, chef)
 }
 
@@ -42,7 +46,6 @@ void chefDestroy(Chef chef) {
 		return;
 	}
 	priorityQueueDestroy(chef->dishes);
-	free(chef->name);
 	free(chef);
 }
 
@@ -56,19 +59,7 @@ Chef chefCopy(Chef source) {
 	}
 	priorityQueueDestroy(copy->dishes);
 	copy->dishes = priorityQueueCopy(source->dishes);
-	if(copy->dishes == NULL) {
-		chefDestroy(copy);
-		return NULL;
-	}
 	return copy;
-}
-
-ChefResult chefGetNameLength(Chef chef, int* nameLength) {
-	if ((chef == NULL) || (nameLength == NULL)) {
-		return CHEF_NULL_ARGUMENT;
-	}
-	*nameLength = strlen(chef->name);
-	return CHEF_SUCCESS;
 }
 
 ChefResult chefGetName(Chef chef, char* buffer) {
@@ -83,7 +74,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
 	if(chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	if(priority < CHEF_DISH_PRIORITY_MIN) {
+	if(priority < DISH_PRIORITY_MIN) {
 		return CHEF_BAD_PRIORITY;
 	}
 	PriorityQueueResult result = priorityQueueAdd(chef->dishes, &dish, priority);
@@ -97,13 +88,8 @@ ChefResult chefGetTopDish(Chef chef, char* buffer) {
 	if(buffer == NULL || chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	Dish dish = priorityQueueTop(chef->dishes);
-	
-	if (dishGetName(dish,buffer) == DISH_NULL_ARGUMENT) {
-		return CHEF_HAS_NO_DISHES;
-	}
-	dishGetName(dish, buffer);
-	return CHEF_SUCCESS;
+	Dish topDish = priorityQueueTop(chef->dishes);
+	strcpy(buffer, topDish->name)
 }
 
 ChefResult chefGetPoints(Chef chef, int* points) {
@@ -123,3 +109,13 @@ ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
 			strcmp(first->name, second->name) > 0));
 	return CHEF_SUCCESS;
 }
+
+/*
+ChefResult isSameChef(Chef first, Chef second, bool* areIdentical) {
+	if(first == NULL || second == NULL || areIdentical == NULL) {
+		return CHEF_NULL_ARGUMENT;
+	}
+	*areIdentical = (strcmp(first->name,second->name) == 0);
+	return CHEF_SUCCESS;
+}
+*/

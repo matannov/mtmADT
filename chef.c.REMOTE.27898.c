@@ -9,7 +9,7 @@ struct chef {
 	PriorityQueue dishes;
 	int points;
 };
-
+	
 /* wrap dishCopy for use in priority queue */
 static PriorityQueueElement copyDish(PriorityQueueElement dish) {
 	return (PriorityQueueElement)dishCopy((Dish)dish);
@@ -63,14 +63,6 @@ Chef chefCopy(Chef source) {
 	return copy;
 }
 
-ChefResult chefGetNameLength(Chef chef, int* nameLength) {
-	if ((chef == NULL) || (nameLength == NULL)) {
-		return CHEF_NULL_ARGUMENT;
-	}
-	*nameLength = strlen(chef->name);
-	return CHEF_SUCCESS;
-}
-
 ChefResult chefGetName(Chef chef, char* buffer) {
 	if(buffer == NULL || chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
@@ -97,12 +89,11 @@ ChefResult chefGetTopDish(Chef chef, char* buffer) {
 	if(buffer == NULL || chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	Dish dish = priorityQueueTop(chef->dishes);
-	
-	if (dishGetName(dish,buffer) == DISH_NULL_ARGUMENT) {
+	Dish topDish = priorityQueueTop(chef->dishes);
+	if(topDish == NULL) {
 		return CHEF_HAS_NO_DISHES;
 	}
-	dishGetName(dish, buffer);
+	dishGetName(topDish, buffer);
 	return CHEF_SUCCESS;
 }
 

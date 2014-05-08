@@ -2,6 +2,7 @@
 #include <string.h>
 #include "test_utilities.h"
 #include "../chef.h"
+#include <stdbool.h>
 
 #define ASSERT_CREATE_FAIL(a) \
 	ASSERT_TEST(chefCreate(name,&result) == NULL && result == (a))
