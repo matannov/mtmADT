@@ -9,7 +9,7 @@ struct chef {
 	PriorityQueue dishes;
 	int points;
 };
-	
+
 /* wrap dishCopy for use in priority queue */
 static PriorityQueueElement copyDish(PriorityQueueElement dish) {
 	return (PriorityQueueElement)dishCopy((Dish)dish);

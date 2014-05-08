@@ -60,7 +60,7 @@ DishResult dishGetName(Dish dish, char* buffer) {
 }
 
 DishResult dishGetTaste(Dish dish, Taste* taste) {
-	if(dish == NULL) {
+	if(taste == NULL || dish == NULL) {
 		return DISH_NULL_ARGUMENT;
 	}
 	*taste = dish->taste;
@@ -68,7 +68,7 @@ DishResult dishGetTaste(Dish dish, Taste* taste) {
 }
 
 DishResult dishGetType(Dish dish, DishType* type) {
-	if(dish == NULL) {
+	if(type == NULL || dish == NULL) {
 		return DISH_NULL_ARGUMENT;
 	}
 	*type = dish->type;
