@@ -51,19 +51,14 @@ Dish dishCopy(Dish source) {
 	return dishCreate(source->name, source->type, source->taste, NULL);
 }
 
-DishResult dishGetName(Dish dish, char* buffer) {
-	if(buffer == NULL || dish == NULL) {
+DishResult dishGetName(Dish dish, char** name) {
+	if(dish == NULL || name == NULL) {
 		return DISH_NULL_ARGUMENT;
 	}
-	strcpy(buffer, dish->name);
-	return DISH_SUCCESS;
-}
-
-DishResult dishGetNameLength(Dish dish, int * length) {
-	if ((dish == NULL) || (length == NULL)) {
-		return DISH_NULL_ARGUMENT;
+	*name = cloneString(dish->name);
+	if(*name == NULL) {
+		return DISH_OUT_OF_MEMORY;
 	}
-	*length = strlen(dish->name);
 	return DISH_SUCCESS;
 }
 

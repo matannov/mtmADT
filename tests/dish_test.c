@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "test_utilities.h"
+#include "../common.h"
 #include "../dish.h"
 
 #define ASSERT_CREATE_FAIL(a) \
@@ -19,7 +20,7 @@
 
 /***************** Tests *****************
  *****************************************/
-bool dishCreateTest() {
+static bool dishCreateTest() {
 	DEFINE_BASIC_PARAMS;
 
 	const char* name = basicName;
@@ -56,25 +57,26 @@ bool dishCreateTest() {
 	return true;
 }
 
-bool dishDestroyTest() {
+static bool dishDestroyTest() {
 	DEFINE_BASIC_DISH;
 	dishDestroy(basicDish);
 	dishDestroy(NULL);
 	return true;
 }
 
-bool dishGetNameTest() {
+static bool dishGetNameTest() {
 	DEFINE_BASIC_DISH;
-	char buffer[20];
-	ASSERT_TEST(dishGetName(basicDish, buffer) == DISH_SUCCESS);
-	ASSERT_TEST(strcmp(buffer, basicName) == 0);
-	ASSERT_TEST(dishGetName(NULL, buffer) == DISH_NULL_ARGUMENT);
+	char* name;
+	ASSERT_TEST(dishGetName(basicDish, &name) == DISH_SUCCESS);
+	ASSERT_TEST(STR_EQUALS(name, basicName));
+	free(name);
+	ASSERT_TEST(dishGetName(NULL, &name) == DISH_NULL_ARGUMENT);
 	ASSERT_TEST(dishGetName(basicDish, NULL) == DISH_NULL_ARGUMENT);
 	dishDestroy(basicDish);
 	return true;
 }
 
-bool dishGetTasteTest() {
+static bool dishGetTasteTest() {
 	DEFINE_BASIC_DISH;
 	Taste taste;
 	ASSERT_TEST(dishGetTaste(basicDish, &taste) == DISH_SUCCESS);
@@ -85,7 +87,7 @@ bool dishGetTasteTest() {
 	return true;
 }
 
-bool dishGetTypeTest() {
+static bool dishGetTypeTest() {
 	DEFINE_BASIC_DISH;
 	DishType type;
 	ASSERT_TEST(dishGetType(basicDish, &type) == DISH_SUCCESS);
@@ -96,19 +98,20 @@ bool dishGetTypeTest() {
 	return true;
 }
 
-bool dishCopyTest() {
+static bool dishCopyTest() {
 	DEFINE_BASIC_DISH;
 	Dish copy = dishCopy(basicDish);
 	ASSERT_TEST(copy != NULL);
-	char buffer[20];
+	char* name;
 	Taste taste;
 	DishType type;
-	dishGetName(copy,buffer);
+	dishGetName(copy,&name);
 	dishGetTaste(copy,&taste);
 	dishGetType(copy,&type);
-	ASSERT_TEST(strcmp(buffer,basicName) == 0 &&
+	ASSERT_TEST(STR_EQUALS(name,basicName) &&
 		memcmp(&taste,&basicTaste,sizeof(taste)) == 0 &&
 		type == basicType);
+	free(name);
 	ASSERT_TEST(dishCopy(NULL) == NULL);
 	dishDestroy(copy);
 	dishDestroy(basicDish);

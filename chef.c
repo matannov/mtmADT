@@ -63,19 +63,14 @@ Chef chefCopy(Chef source) {
 	return copy;
 }
 
-ChefResult chefGetNameLength(Chef chef, int* nameLength) {
-	if ((chef == NULL) || (nameLength == NULL)) {
+ChefResult chefGetName(Chef chef, char** name) {
+	if(chef == NULL || name == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	*nameLength = strlen(chef->name);
-	return CHEF_SUCCESS;
-}
-
-ChefResult chefGetName(Chef chef, char* buffer) {
-	if(buffer == NULL || chef == NULL) {
-		return CHEF_NULL_ARGUMENT;
+	*name = cloneString(chef->name);
+	if(*name == NULL) {
+		return CHEF_OUT_OF_MEMORY;
 	}
-	strcpy(buffer, chef->name);
 	return CHEF_SUCCESS;
 }
 
@@ -93,16 +88,17 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
 	return CHEF_SUCCESS;
 }
 
-ChefResult chefGetTopDish(Chef chef, char* buffer) {
-	if(buffer == NULL || chef == NULL) {
+ChefResult chefGetTopDish(Chef chef, char** name) {
+	if(chef == NULL || name == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	Dish dish = priorityQueueTop(chef->dishes);
-	
-	if (dishGetName(dish,buffer) == DISH_NULL_ARGUMENT) {
+	if(dish == NULL) {
 		return CHEF_HAS_NO_DISHES;
 	}
-	dishGetName(dish, buffer);
+	if(dishGetName(dish, name) == DISH_OUT_OF_MEMORY) {
+		return CHEF_OUT_OF_MEMORY;
+	}
 	return CHEF_SUCCESS;
 }
 
@@ -120,6 +116,6 @@ ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
 	}
 	*firstBetter = (first->points > second->points ||
 			(first->points == second->points && 
-			strcmp(first->name, second->name) > 0));
+			STR_IS_PRIOR(first->name, second->name)));
 	return CHEF_SUCCESS;
 }

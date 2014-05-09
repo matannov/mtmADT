@@ -2,6 +2,7 @@
 #include <string.h>
 #include "test_utilities.h"
 #include "../chef.h"
+#include "../common.h"
 #include <stdbool.h>
 
 #define ASSERT_CREATE_FAIL(a) \
@@ -18,7 +19,7 @@
 
 /***************** Tests *****************
  *****************************************/
-bool chefCreateTest() {
+static bool chefCreateTest() {
 	DEFINE_BASIC_NAME;
 
 	const char* name = basicName;
@@ -34,18 +35,18 @@ bool chefCreateTest() {
 	return true;
 }
 
-bool chefDestroyTest() {
+static bool chefDestroyTest() {
 	DEFINE_BASIC_CHEF;
 	chefDestroy(basicChef);
 	chefDestroy(NULL);
 	return true;
 }
 
-bool chefGetNameTest() {
+static bool chefGetNameTest() {
 	DEFINE_BASIC_CHEF;
 	char buffer[20];
 	ASSERT_TEST(chefGetName(basicChef,buffer) == CHEF_SUCCESS);
-	ASSERT_TEST(strcmp(buffer,basicName) == 0);
+	ASSERT_TEST(STR_EQUALS(buffer,basicName));
 	ASSERT_TEST(chefGetName(NULL,buffer) == CHEF_NULL_ARGUMENT);
 	ASSERT_TEST(chefGetName(basicChef,NULL) == CHEF_NULL_ARGUMENT);
 	chefDestroy(basicChef);
@@ -61,13 +62,13 @@ bool chefGetNameTest() {
 //ChefResult chefGetPoints(Chef chef, int* points);
 //add point?
 
-bool chefCopyTest() {
+static bool chefCopyTest() {
 	DEFINE_BASIC_CHEF;
 	Chef copy = chefCopy(basicChef);
 	ASSERT_TEST(copy != NULL);
 	char buffer[20];
 	chefGetName(copy,buffer);
-	ASSERT_TEST(strcmp(buffer,basicName) == 0);
+	ASSERT_TEST(STR_EQUALS(buffer,basicName));
 	ASSERT_TEST(chefCopy(NULL) == NULL);
 	chefDestroy(copy);
 	chefDestroy(basicChef);

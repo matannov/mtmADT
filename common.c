@@ -9,3 +9,10 @@ char* cloneString(const char* str) {
 	}
 	return temp;
 }
+
+void freeArray(void** start, int size) {
+	for(int i = 0; i < size; i++) {
+		free(*start);
+		start++;
+	}
+}

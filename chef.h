@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include "dish.h"
-#include <stdbool.h>
 
 #define CHEF_DISH_PRIORITY_MIN 0
 
@@ -44,25 +43,15 @@ void chefDestroy(Chef chef);
 Chef chefCopy(Chef source);
 
 /*
- * Get length of chef's name.
- *
- * @param chef chef to get name's length of
- * @param nameLength the length of the chef's name will be written here
- * @return Result success or error code
- *
-*/
-
-ChefResult chefGetNameLength(Chef chef, int* nameLength);
-
-/*
  * Get chef name.
  *
  * @param chef Chef to get name of
- * @param buffer Name will be written here. Make sure there is enough space.
+ * @param name String pointer will be written here. 
+ * 	User is responsible to free this memory.
  * @return Result success or error code.
- *	Error codes: CHEF_NULL_ARGUMENT
+ *	Error codes: CHEF_NULL_ARGUMENT, CHEF_OUT_OF_MEMORY
  */
-ChefResult chefGetName(Chef chef, char* buffer);
+ChefResult chefGetName(Chef chef, char** name);
 
 /*
  * Add a dish with given priority to chef.
@@ -83,11 +72,12 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority);
  * same priority, the dish that was added first is returned.
  *
  * @param chef Chef to get the name of top dish from.
- * @param buffer Name will be written here. Make sure there is enough space.
+ * @param name String pointer will be written here. 
+ * 	User is responsible to free this memory.
  * @return Result success or error code.
- *	Error codes: CHEF_NULL_ARGUMENT, CHEF_HAS_NO_DISHES
+ *	Error codes: CHEF_NULL_ARGUMENT, CHEF_HAS_NO_DISHES, CHEF_OUT_OF_MEMORY
  */
-ChefResult chefGetTopDish(Chef chef, char* buffer);
+ChefResult chefGetTopDish(Chef chef, char** name);
 
 /*
  * Get the number of points the chef has.

@@ -4,8 +4,10 @@
 #include "set.h"
 #include "list.h"
 #include "chef.h"
+#include "judge.h"
 
 typedef enum {
+	TOURNAMENT_SUCCESS,
 	TOURNAMENT_OUT_OF_MEMORY,
 	TOURNAMENT_NULL_ARG,
 	TOURNAMENT_BAD_PREFERENCE,
@@ -14,8 +16,7 @@ typedef enum {
 	TOURNAMENT_CHEF_HAS_NO_DISHES,
 	TOURNAMENT_CHEF_ALREADY_EXISTS,
 	TOURNAMENT_HAS_NO_CHEFS,
-	TOURNAMENT_HAS_NO_JUDGES,
-	TOURNAMENT_SUCCESS
+	TOURNAMENT_HAS_NO_JUDGES
 } tournamentResult;
 
 typedef struct t_tournament {
@@ -27,8 +28,9 @@ Tournament tournamentCreate(tournamentResult * result);
 void tournamentDestroy(Tournament tournament);
 tournamentResult tournamentAddChef(char * const name, Tournament tournament);
 tournamentResult leadingChef(Tournament tournament, Chef * leader);
-tournamentResult tournamentAddJudge(char * const nickname, int preference, Tournament tournament);
+tournamentResult tournamentAddJudge(char const* nickname, 
+	JudgeByPreference judgeByPreference, Tournament tournament);
 tournamentResult addDishToChef(char * chefName, char * dishName, DishType type, int sweetness, int sourness, int saltiness, int priority, Tournament tournament); // implement
-tournamentResult tournamentGetTopDish(char * chefName, Tournament tournament, char ** dishName);
+tournamentResult tournamentGetTopDish(char const* chefName, Tournament tournament, char** dishName);
 tournamentResult tournamentGetJudges(char *** judges, int * numberOfJudges, Tournament 	tournament);
 #endif // _TOURNAMENT_H

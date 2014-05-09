@@ -34,8 +34,8 @@ typedef struct judge *Judge;
  * @param nickname Nickname for new judge. The string is copied.
  * @param result Result success or error code.
  * 	If "result" is null, it is ignored and no code is returned.
- *	Error codes: JUDGE_NULL_ARGUMENT, CHEF_OUT_OF_MEMORY
- * @return The new chef, NULL in case of error.
+ *	Error codes: JUDGE_NULL_ARGUMENT, JUDGE_OUT_OF_MEMORY
+ * @return The new judge, NULL in case of error.
  */
 Judge judgeCreate(char const* nickname, JudgeByPreference judgeByPreference, 
 	JudgeResult* result);
@@ -46,8 +46,6 @@ Judge judgeCreate(char const* nickname, JudgeByPreference judgeByPreference,
  * @param judge Judge to destroy, if NULL does nothing.
  */
 void judgeDestroy(Judge judge);
-JudgeResult addHatedChef(char * const chefName, Judge judge, bool * judgeQuits);
-char * judgeGetName(Judge judge);
 
 /*
  * Create a copy of an existing judge.
@@ -61,11 +59,12 @@ Judge judgeCopy(Judge source);
  * Get judge nickname.
  *
  * @param judge Judge to get it's nickname
- * @param buffer Name will be written here. Make sure there is enough space.
+ * @param nickname String pointer will be written here. 
+ * 	User is responsible to free this memory.
  * @return Result success or error code.
- *	Error codes: JUDGE_NULL_ARGUMENT
+ *	Error codes: JUDGE_NULL_ARGUMENT, JUDGE_OUT_OF_MEMORY
  */
-JudgeResult judgeGetNickname(Judge judge, char* buffer);
+JudgeResult judgeGetNickname(Judge judge, char** nickname);
 
 /*
  * Judge betweem two dishes.
@@ -93,7 +92,5 @@ JudgeResult judgeGetNickname(Judge judge, char* buffer);
  */
 JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2, 
 	char* chefName1, char* chefName2, bool* dish1Wins, bool* judgeQuits);
-
-void * getInedibleFunction();
 
 #endif // _JUDGE_H

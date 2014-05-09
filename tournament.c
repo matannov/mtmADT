@@ -101,35 +101,38 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult tournamentAddJudge(char * const nickname, int preference, Tournament tournament) {
-	if ((nickname == NULL) || (tournament == NULL)) {
+tournamentResult tournamentAddJudge(char const* nickname, 
+	JudgeByPreference judgeByPreference, Tournament tournament) {
+
+	if(nickname == NULL || tournament == NULL || judgeByPreference == NULL) {
 		return TOURNAMENT_NULL_ARG;
 	}
+
 	JudgeResult result;
-	Judge judge = judgeCreate(nickname, getInedibleFunction(), &result);
-	if (result == JUDGE_BAD_PREFERENCE_RESULT) {
-		return TOURNAMENT_BAD_PREFERENCE;
+	Judge judge = judgeCreate(nickname, judgeByPreference, &result);
+	if(judge == NULL) {
+		return TOURNAMENT_OUT_OF_MEMORY;
 	}
-	if ((listInsertLast(tournament->judges, judge) != LIST_SUCCESS)) {
+	if(listInsertLast(tournament->judges, judge) == LIST_OUT_OF_MEMORY) {
 		judgeDestroy(judge);
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
+	judgeDestroy(judge);
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult tournamentGetTopDish(char * chefName, Tournament tournament, char ** dishName) {
-	char * name;
-	int nameLength;
-	if ((chefName == NULL) || (tournament == NULL) || (dishName == NULL)) {
+tournamentResult tournamentGetTopDish(char const* chefName, 
+	Tournament tournament, char** dishName) {
+
+	char* name;
+	if(chefName == NULL || tournament == NULL || dishName == NULL) {
 		return TOURNAMENT_NULL_ARG;
 	}
 	SET_FOREACH(Chef,chef,tournament->chefs){
-		chefGetNameLength(chef,&nameLength);
-		name = malloc(nameLength+1);
-		chefGetName(chef,name);
-		if (strcmp(name,chefName) == 0) {
+		chefGetName(chef,&name);
+		if(STR_EQUALS(name,chefName)) {
 			free(name);
-			if (chefGetTopDish(chef,*dishName) == CHEF_HAS_NO_DISHES) {
+			if(chefGetTopDish(chef, dishName) == CHEF_HAS_NO_DISHES) {
 				return TOURNAMENT_CHEF_HAS_NO_DISHES;
 			}
 			return TOURNAMENT_SUCCESS;
@@ -139,30 +142,40 @@ tournamentResult tournamentGetTopDish(char * chefName, Tournament tournament, ch
 	return TOURNAMENT_NO_SUCH_CHEF;
 }
 
-tournamentResult tournamentGetJudges(char *** judges, int * numberOfJudges, Tournament tournament) {
-	if ((judges == NULL) || (numberOfJudges == NULL) || (tournament == NULL)) {
+tournamentResult tournamentGetJudges(char*** judges, int* numberOfJudges, 
+	Tournament tournament) {
+
+	if(judges == NULL || numberOfJudges == NULL || tournament == NULL) {
 		return TOURNAMENT_NULL_ARG;
 	}
-	*judges = (char**)malloc(sizeof(char*)*listGetSize(tournament->judges));
-	*numberOfJudges = 0;
-	LIST_FOREACH(Judge, judge, tournament->judges) {
-		(*judges)[*numberOfJudges] = judgeGetName(judge);
-		(*numberOfJudges)++;
-	}
-	if (*numberOfJudges == 0) {
+	*numberOfJudges = listGetSize(tournament->judges);
+	if(*numberOfJudges == 0) {
 		return TOURNAMENT_HAS_NO_JUDGES;
 	}
+	char** judgesArray = malloc(sizeof(*judgesArray)*(*numberOfJudges));
+	if(judgesArray == NULL) {
+		return TOURNAMENT_OUT_OF_MEMORY;
+	}
+	char** currentName = judgesArray;
+	LIST_FOREACH(Judge, judge, tournament->judges) {
+		if(judgeGetNickname(judge, currentName) == JUDGE_OUT_OF_MEMORY) {
+			freeArray((void**)judgesArray, currentName-judgesArray);
+			free(judgesArray);
+			return TOURNAMENT_OUT_OF_MEMORY;
+		}
+		currentName++;
+	}
+	*judges = judgesArray;
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult addDishToChef(char * chefName, char * dishName, DishType type, int sweetness, int sourness, int saltiness, int priority, Tournament tournament) {
-	Chef target;
-	char * name;
-	int nameLength;
-	Taste taste;
-	taste.sweetness = sweetness;
-	taste.sourness = sourness;
-	taste.saltiness = saltiness;
+tournamentResult addDishToChef(char* chefName, char* dishName, DishType type, 
+	int sweetness, int sourness, int saltiness, int priority, 
+	Tournament tournament) {
+
+	
+	
+	Taste taste = {sweetness, sourness, saltiness};
 	DishResult result;
 	Dish dish = dishCreate(dishName, type, taste, &result);
 	if (result == DISH_BAD_PARAM) {
@@ -171,15 +184,17 @@ tournamentResult addDishToChef(char * chefName, char * dishName, DishType type, 
 	if (result == DISH_OUT_OF_MEMORY) {
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
+	Chef target;
+	char* name;
 	SET_FOREACH(Chef, chef, tournament->chefs) {
-		chefGetNameLength(chef,&nameLength);
-		name = malloc(nameLength+1);
-		chefGetName(chef,name);
-		if (strcmp(chefName,name) == 0) {
+
+		chefGetName(chef, &name);
+		if(STR_EQUALS(chefName, name)) {
 			target = chef;
 		}
 		free(name);
 	}
 	chefAddDish(target,dish,priority);
+	free(dish);
 	return TOURNAMENT_SUCCESS;
 }

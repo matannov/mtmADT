@@ -29,10 +29,6 @@ static bool isUnedibleDish(Dish dish) {
 	return (taste.sweetness >= unedibleSweetness || 
 		taste.sourness >= unedibleSourness || 
 		taste.saltiness >= unedibleSaltiness);
-} 
-
-void * getInedibleFunction() {
-	return &isUnedibleDish;
 }
 
 /* check if a chef is hated based on past and current unedible dish.
@@ -44,11 +40,6 @@ static bool CheckAndUpdateHated(Judge judge, bool isUnedible, char* chefName) {
 		return true;
 	}
 	return setIsIn(judge->hatedChefs, chefName);
-}
-
-/* check if chef name is prior lexicographically */
-static bool isNamePrior(char* chefName1, char* chefName2) {
-	return (strcmp(chefName1, chefName2) < 0);
 }
 
 /* wrap cloneString for use in set */
@@ -111,11 +102,14 @@ Judge judgeCopy(Judge source) {
 	return copy;
 }
 
-JudgeResult judgeGetNickname(Judge judge, char* buffer) {
-	if(buffer == NULL || judge == NULL) {
+JudgeResult judgeGetNickname(Judge judge, char** nickname) {
+	if(judge == NULL || nickname == NULL) {
 		return JUDGE_NULL_ARGUMENT;
 	}
-	strcpy(buffer, judge->nickname);
+	*nickname = cloneString(judge->nickname);
+	if(*nickname == NULL) {
+		return JUDGE_OUT_OF_MEMORY;
+	}
 	return JUDGE_SUCCESS;
 }
 
@@ -141,14 +135,7 @@ JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2,
 	bool isHated2 = CheckAndUpdateHated(judge, isUnedible2, chefName2);
 	*dish1Wins = ((!isHated1 && isHated2) || (isHated1 == isHated2 && 
 		(preference == JUDGE_PREFER_FIRST || (preference == JUDGE_TIE && 
-		isNamePrior(chefName1, chefName2)))));
+		STR_IS_PRIOR(chefName1, chefName2)))));
 	*judgeQuits = shouldQuit(judge);
 	return JUDGE_SUCCESS;
-}
-
-char * judgeGetName(Judge judge) {
-	if (judge == NULL) {
-		return NULL;
-	}
-	return judge->nickname;
 }

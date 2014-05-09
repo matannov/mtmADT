@@ -58,11 +58,12 @@ Dish dishCopy(Dish source);
  * Get dish name.
  *
  * @param dish Dish to get it's name
- * @param buffer Name will be written here. Make sure there is enough space.
+ * @param name String pointer will be written here. 
+ * 	User is responsible to free this memory.
  * @return Result success or error code.
- *	Error codes: DISH_NULL_ARGUMENT
+ *	Error codes: DISH_NULL_ARGUMENT, DISH_OUT_OF_MEMORY
  */
-DishResult dishGetName(Dish dish, char* buffer);
+DishResult dishGetName(Dish dish, char** name);
 
 /*
  * Get dish taste params.
@@ -83,16 +84,6 @@ DishResult dishGetTaste(Dish dish, Taste* taste);
  *	Error codes: DISH_NULL_ARGUMENT
  */
 DishResult dishGetType(Dish dish, DishType* type);
-
-/*
- * Get length of dish's name.
- *
- * @param dish Dish to read it's sweetness
- * @param length length of the dish's name will be written here.
- * @return Result success or error code.
- */
- 
- DishResult dishGetNameLength(Dish dish, int * length);
 
 
 #endif // _DISH_H
