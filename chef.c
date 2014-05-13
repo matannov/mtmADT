@@ -125,3 +125,29 @@ ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
 	*firstBetter = (first->points > second->points);
 	return CHEF_SUCCESS;
 }
+
+ChefResult chefPopTopDish(Chef chef, Dish * dish, bool * lastDish) {
+	if ((chef == NULL) || (dish == NULL)) {
+		return CHEF_NULL_ARGUMENT;
+	}
+	*dish = dishCopy(priorityQueueTop(chef->dishes));
+	if (*dish == NULL) {
+		return CHEF_HAS_NO_DISHES;
+	}
+	priorityQueuePop(chef->dishes);
+	if (priorityQueueGetSize(chef->dishes) == 0) {
+		SAFE_ASSIGN(lastDish,true)
+	}
+	else {
+		SAFE_ASSIGN(lastDish,false)
+	}
+	return CHEF_SUCCESS;
+}
+
+ChefResult chefGivePoint(Chef chef) {
+	if (chef == NULL) {
+		return CHEF_NULL_ARGUMENT;
+	}
+	chef->points++;
+	return CHEF_SUCCESS;
+}

@@ -240,3 +240,87 @@ TournamentResult tournamentGetTopDish(Tournament tournament,
 	}
 	return TOURNAMENT_SUCCESS;
 }
+
+static TournamentResult tournamentFindChef(Tournament tournament, char * chefName, Chef * chef) {
+	char * target;
+	*chef = NULL;
+	SET_FOREACH(Chef, chefIterator, tournament->chefs) {
+		chefGetName(chefIterator,&target);
+		if (strcmp(target, chefName) == 0) {
+			*chef = chefIterator;
+		}
+		free(target);
+	}
+	if (*chef == NULL) {
+		return TOURNAMENT_NO_SUCH_CHEF;
+	}
+	return TOURNAMENT_SUCCESS;
+}
+
+TournamentResult tournamentCompete(Tournament tournament, 
+	char * firstChef, char * secondChef, char *** resigningJudges,
+	int * numberJudgesResigned, bool * firstChefWins, bool * secondChefWins) {
+		Chef first, second;
+		Dish firstDish, secondDish;
+		bool firstDone, secondDone, firstWins, resignation;
+		int firstPoints = 0, secondPoints = 0, numJudges, remainingJudges;
+		char * name;
+		Judge judge;
+		TournamentResult result;
+		*numberJudgesResigned = 0;
+		
+	if ((tournament == NULL) || (firstChef == NULL) || (secondChef == NULL) ||
+		(resigningJudges == NULL) || (numberJudgesResigned == NULL) ||
+		(firstChefWins == NULL) || (secondChefWins == NULL)) {
+			return TOURNAMENT_NULL_ARGUMENT;
+	}
+
+	result = tournamentFindChef(tournament, firstChef, &first);
+	if (result != TOURNAMENT_SUCCESS) {
+		return result;
+	}
+	result = tournamentFindChef(tournament, secondChef, &second);
+	if (result != TOURNAMENT_SUCCESS) {
+		return result;
+	}
+	numJudges = listGetSize(tournament->judges);
+	if (numJudges == 0) {
+		return TOURNAMENT_HAS_NO_JUDGES;
+	}
+	remainingJudges = numJudges;
+	*resigningJudges = (char**)malloc(sizeof(char**)*numJudges);
+	if ((chefGetTopDishName(first,&name) == CHEF_HAS_NO_DISHES) || (chefGetTopDishName(second,&name) == CHEF_HAS_NO_DISHES)) {
+		return TOURNAMENT_CHEF_HAS_NO_DISHES;
+	}
+	do {
+	chefPopTopDish(first, &firstDish, &firstDone);
+	chefPopTopDish(second, &secondDish, &secondDone);
+	judge = listGetFirst(tournament->judges);
+	while ((firstPoints - secondPoints < remainingJudges) && (secondPoints - firstPoints < remainingJudges)) {
+		judgeJudgeDishes(judge, firstDish, secondDish, firstChef, secondChef,
+						&firstWins, &resignation);
+		if (firstWins) {
+			firstPoints++;
+		}
+		else {
+			secondPoints++;
+		}
+		if (resignation) {
+			judgeGetNickname(judge,resigningJudges[*numberJudgesResigned]);
+			(*numberJudgesResigned)++;
+			listRemoveCurrent(tournament->judges);
+		}
+		judge = listGetNext(tournament->judges);
+		remainingJudges--;
+	}
+	} while (!firstDone && !secondDone);
+	*firstChefWins = firstPoints > secondPoints;
+	*secondChefWins = secondPoints > firstPoints;
+	if (*firstChefWins) {
+		chefGivePoint(first);
+	}
+	if (*secondChefWins) {
+		chefGivePoint(second);
+	}
+	return TOURNAMENT_SUCCESS;
+}

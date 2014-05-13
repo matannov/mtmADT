@@ -38,11 +38,13 @@ static void reset (Tournament * tournament) {
 
 static void printTopDish (Tournament tournament) {
 	char * chefName = strtok(NULL," \n");
+	CHECK_OVERFLOW;
 	if (chefName == NULL) {
+		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 		return;
 	}
 	char * dishName;
-	tournamentResult result = tournamentGetTopDish(chefName, tournament, &dishName);
+	TournamentResult result = tournamentGetTopDish(tournament, chefName, &dishName);
 	if (result == TOURNAMENT_NO_SUCH_CHEF) {
 		mtmPrintErrorMessage(stdout,MTM_CHEF_NOT_FOUND);
 		return;
@@ -56,7 +58,9 @@ static void printTopDish (Tournament tournament) {
 
 static void addJudge (Tournament tournament) {
 	char * nickname = strtok(NULL, " \n");
-	int preference = atoi(strtok(NULL, " \n")); //empty?
+	char * intHolder;
+	getInt(intHolder,preference);
+	CHECK_OVERFLOW;
 	JudgeByPreference judgeByPreference;
 	switch(preference) {
 	case 1:
@@ -72,19 +76,20 @@ static void addJudge (Tournament tournament) {
 		mtmPrintErrorMessage(stdout,MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 		return;	
 	}
-	tournamentResult result = tournamentAddJudge(nickname, judgeByPreference,
-		tournament);
+	TournamentResult result = tournamentAddJudge(tournament, nickname, judgeByPreference);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
 		handleOutOfMemory(tournament);
 	}
 }
 
 static void printJudges (Tournament tournament) {
+	CHECK_OVERFLOW;
 	char ** judges;
 	int numberOfJudges;
-	tournamentResult result = tournamentGetJudges(&judges, &numberOfJudges, tournament);
+	TournamentResult result = tournamentGetJudges(tournament, &judges, &numberOfJudges);
 	if(result == TOURNAMENT_HAS_NO_JUDGES) {
-		// do the error
+		mtmPrintErrorMessage(stderr,MTM_NO_JUDGES);
+		return;
 	}
 	mtmPrintAllJudges(stdout, judges, numberOfJudges);
 }
@@ -92,7 +97,7 @@ static void printJudges (Tournament tournament) {
 static void printLeading (Tournament tournament) {
 	CHECK_OVERFLOW;
 	Chef leader;
-	if(leadingChef(tournament, &leader) == TOURNAMENT_HAS_NO_CHEFS) {
+	if(tournamentLeadingChef(tournament, &leader) == TOURNAMENT_HAS_NO_CHEFS) {
 		mtmPrintErrorMessage(stderr, MTM_NO_CHEFS);
 		return;
 	}
@@ -111,8 +116,8 @@ static void addChef (Tournament tournament) {
 		return;
 	}
 	CHECK_OVERFLOW;
-	tournamentResult result;
-	result = tournamentAddChef(name, tournament);
+	TournamentResult result;
+	result = tournamentAddChef(tournament, name);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
 		handleOutOfMemory(tournament);
 	}
@@ -131,8 +136,8 @@ static void addDish (Tournament tournament) {
 	getInt(intHolder,saltyness)
 	getInt(intHolder,priority)
 	CHECK_OVERFLOW;
-	tournamentResult result = addDishToChef(chefName, dishName, dishType, sweetness,
-		sourness, saltyness, priority, tournament);
+	Taste taste = {sweetness, sourness, saltyness};
+	TournamentResult result = tournamentAddDishToChef(tournament, chefName, dishName, dishType, taste, priority);
 	if(result != TOURNAMENT_SUCCESS) {
 		switch(result) {
 		case TOURNAMENT_OUT_OF_MEMORY:
@@ -141,12 +146,45 @@ static void addDish (Tournament tournament) {
 		case TOURNAMENT_NO_SUCH_CHEF:
 			mtmPrintErrorMessage(stderr, MTM_CHEF_NOT_FOUND);
 			break;
-		case TOURNAMENT_BAD_DISH:
+		case TOURNAMENT_BAD_PARAM:
 			mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 			break;
 		default:
 			assert(false); //unhandled error
 		}
+	}
+}
+
+static void compete(Tournament tournament) {
+	char * chefA = strtok(NULL," \n");
+	char * chefB = strtok(NULL," \n");
+	if (chefB == NULL) {
+		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
+		return;
+	}
+	CHECK_OVERFLOW;
+	char ** resigningJudges;
+	int numberJudgesResigned;
+	bool firstChefWins, secondChefWins;
+	/*TournamentResult result = */tournamentCompete(tournament, 
+	chefA, chefB, &resigningJudges,
+	&numberJudgesResigned, &firstChefWins, &secondChefWins);
+	// error checking
+	if (numberJudgesResigned > 0) {
+		for (int i=0;i<numberJudgesResigned;i++) {
+			mtmPrintJudgeResignationMessage(stdout,resigningJudges[i]);
+			free(resigningJudges[i]);
+		}
+	}
+	free(resigningJudges);
+	if (firstChefWins) {
+		mtmPrintWinningAndLosingChefs(stdout, chefA, chefB);
+	}
+	else if (secondChefWins) {
+		mtmPrintWinningAndLosingChefs(stdout, chefB, chefA);
+	}
+	else {
+		mtmPrintTieBetweenTwoChefs(stdout, chefA, chefB);
 	}
 }
 	
@@ -169,7 +207,7 @@ static void proccessCommand (char * line, Tournament tournament) {
 			addDish(tournament);
 		}
 		else if (STR_EQUALS(secondaryCommand,"compete")) {
-			//compete(tournament); implement this
+			compete(tournament);
 		}
 		else if (STR_EQUALS(secondaryCommand,"leading")) {
 			printLeading(tournament);
@@ -189,7 +227,7 @@ static void proccessCommand (char * line, Tournament tournament) {
 }
 
 int main(int argc,char *argv[]) { // add support for input & output files
-	tournamentResult result;
+	TournamentResult result;
 	Tournament tournament = tournamentCreate(&result);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
 		handleOutOfMemory(tournament);
