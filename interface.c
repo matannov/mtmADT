@@ -166,10 +166,25 @@ static void compete(Tournament tournament) {
 	char ** resigningJudges;
 	int numberJudgesResigned;
 	bool firstChefWins, secondChefWins;
-	/*TournamentResult result = */tournamentCompete(tournament, 
+	TournamentResult result = tournamentCompete(tournament, 
 	chefA, chefB, &resigningJudges,
 	&numberJudgesResigned, &firstChefWins, &secondChefWins);
-	// error checking
+	if (result == TOURNAMENT_NO_SUCH_CHEF) {
+		mtmPrintErrorMessage(stderr,MTM_CHEF_NOT_FOUND);
+		return;
+	}
+	if (strcmp(chefA,chefB) == 0) {
+		mtmPrintErrorMessage(stderr,MTM_SAME_CHEF);
+		return;
+	}
+	if (result == TOURNAMENT_HAS_NO_JUDGES) {
+		mtmPrintErrorMessage(stderr,MTM_NO_JUDGES);
+		return;
+	}
+	if (result == TOURNAMENT_CHEF_HAS_NO_DISHES) {
+		mtmPrintErrorMessage(stderr,MTM_CHEF_HAS_NO_DISHES);
+		return;
+	}
 	if (numberJudgesResigned > 0) {
 		for (int i=0;i<numberJudgesResigned;i++) {
 			mtmPrintJudgeResignationMessage(stdout,resigningJudges[i]);
