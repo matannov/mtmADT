@@ -184,7 +184,7 @@ tournamentResult addDishToChef(char* chefName, char* dishName, DishType type,
 	if (result == DISH_OUT_OF_MEMORY) {
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
-	Chef target;
+	Chef target = NULL;
 	char* name;
 	SET_FOREACH(Chef, chef, tournament->chefs) {
 
@@ -194,7 +194,9 @@ tournamentResult addDishToChef(char* chefName, char* dishName, DishType type,
 		}
 		free(name);
 	}
-	chefAddDish(target,dish,priority);
+	if (chefAddDish(target,dish,priority) == CHEF_NULL_ARGUMENT) {
+		return TOURNAMENT_NO_SUCH_CHEF;
+	}
 	free(dish);
 	return TOURNAMENT_SUCCESS;
 }

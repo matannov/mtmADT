@@ -7,17 +7,19 @@
 #include "tournament.h"
 #include "judge_preferences.h"
 
-/* todo list:
-	reset V
-	addChef V
-	addDish V
-	compete 
-	printLeading V
-	printTopDish V
-	addJudge V
-	printJudges V
-	printOutOfMemoryAndDie V
-*/
+#define getInt(holder,param) \
+	holder = strtok(NULL," \n"); \
+	if (holder == NULL) { \
+		mtmPrintErrorMessage(stdout,MTM_INVALID_INPUT_COMMAND_PARAMETERS); \
+		return; \
+	} \
+	int param = atoi(holder);
+	
+#define CHECK_OVERFLOW \
+		if (strtok(NULL," \n") != NULL) { \
+		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS); \
+		return; \
+	}
 
 /* called to handle an out of memory error */
 static void handleOutOfMemory(Tournament tournament) {
@@ -88,6 +90,7 @@ static void printJudges (Tournament tournament) {
 }
 
 static void printLeading (Tournament tournament) {
+	CHECK_OVERFLOW;
 	Chef leader;
 	if(leadingChef(tournament, &leader) == TOURNAMENT_HAS_NO_CHEFS) {
 		mtmPrintErrorMessage(stderr, MTM_NO_CHEFS);
@@ -103,6 +106,11 @@ static void printLeading (Tournament tournament) {
 
 static void addChef (Tournament tournament) {
 	char * name = strtok(NULL," \n");
+	if (name == NULL) {
+		mtmPrintErrorMessage(stdout,MTM_INVALID_INPUT_COMMAND_PARAMETERS);
+		return;
+	}
+	CHECK_OVERFLOW;
 	tournamentResult result;
 	result = tournamentAddChef(name, tournament);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
@@ -116,11 +124,13 @@ static void addChef (Tournament tournament) {
 static void addDish (Tournament tournament) {
 	char * chefName = strtok(NULL," \n");
 	char * dishName = strtok(NULL," \n");
-	int dishType = atoi(strtok(NULL," \n"));
-	int sweetness = atoi(strtok(NULL," \n"));
-	int sourness = atoi(strtok(NULL," \n"));
-	int saltyness = atoi(strtok(NULL," \n"));
-	int priority = atoi(strtok(NULL," \n"));
+	char * intHolder;
+	getInt(intHolder,dishType)
+	getInt(intHolder,sweetness)
+	getInt(intHolder,sourness)
+	getInt(intHolder,saltyness)
+	getInt(intHolder,priority)
+	CHECK_OVERFLOW;
 	tournamentResult result = addDishToChef(chefName, dishName, dishType, sweetness,
 		sourness, saltyness, priority, tournament);
 	if(result != TOURNAMENT_SUCCESS) {
@@ -143,8 +153,6 @@ static void addDish (Tournament tournament) {
 static void proccessCommand (char * line, Tournament tournament) {
 	char * primaryCommand = strtok(line," \n");
 	char * secondaryCommand = strtok(NULL," \n");
-	int comp = strcmp(primaryCommand,"reset");
-	printf("%s%d\n",primaryCommand,comp);
 
 	if (STR_EQUALS(primaryCommand,"reset")) {	
 		printf("reseting...\n");
