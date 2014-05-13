@@ -1,99 +1,124 @@
 #include <stdlib.h>
 #include <string.h>
-#include "chef.h"
-#include "judge.h"
+#include <assert.h>
+#include "set.h"
+#include "list.h"
 #include "common.h"
 #include "tournament.h"
 
+struct tournament {
+	Set chefs;
+	List judges;
+};
 
-static ListElement copyChef(SetElement chef) {
+/* wrap chefCopy for use in set */
+static SetElement copyChef(SetElement chef) {
 	return chefCopy(chef);
 }
 
+/* wrap chefDestroy for use in set */
 static void destroyChef(SetElement chef) {
 	chefDestroy(chef);
 }
 
-static ListElement copyJudge(ListElement judge) {
-	return NULL;
-	//return judgeCopy(judge); ***implement***
+/* wrap chefCompareNames for use in set */
+static int compareChefs(SetElement first, SetElement second) {
+	int result;
+	chefCompareNames(first, second, &result);
+	return result;
 }
 
+/* wrap judgeCopy for use in list */
+static ListElement copyJudge(ListElement judge) {
+	return judgeCopy(judge);
+}
+
+/* wrap judgeDestroy for use in list */
 static void destroyJudge(ListElement judge) {
 	judgeDestroy(judge);
 }
 
-static int compareChefs(SetElement first, SetElement second) {
-	bool isBetter;
-	//**should be only by name**
-	if (chefIsBetterRanked(first,second,&isBetter)) {
-		return 1;
+/* find a chef in the set. 
+ * error codes: TOURNAMENT_NO_SUCH_CHEF, TOURNAMENT_OUT_OF_MEMORY */
+static TournamentResult findChef(Tournament tournament, char const* name, 
+	Chef* matchingChef) {
+
+	ChefResult getResult;
+	char* currentName;
+	SET_FOREACH(Chef, chef, tournament->chefs) {
+		getResult = chefGetName(chef, &currentName);
+		if(getResult == CHEF_OUT_OF_MEMORY) {
+			return TOURNAMENT_OUT_OF_MEMORY;
+		}
+		assert(getResult == CHEF_SUCCESS);
+		if(STR_EQUALS(currentName, name)) {
+			free(currentName);
+			*matchingChef = chef;
+			return TOURNAMENT_SUCCESS;
+		}
+		free(currentName);
 	}
-	chefIsBetterRanked(second,first,&isBetter);
-	if (isBetter) {
-		return -1;
-	}
-	return 0;
+	return TOURNAMENT_NO_SUCH_CHEF;
 }
 
-Tournament tournamentCreate(tournamentResult * result) {
-	Tournament tournament = (Tournament)malloc(sizeof(*tournament));
-	if (tournament == NULL) {
-		SAFE_ASSIGN(result,TOURNAMENT_OUT_OF_MEMORY)
-		return NULL;
+Tournament tournamentCreate(TournamentResult* result) {
+	Tournament tournament = malloc(sizeof(*tournament));
+	if(tournament == NULL) {
+		ASSIGN_AND_RETURN(result, TOURNAMENT_OUT_OF_MEMORY, NULL)
 	}
 	tournament->chefs = setCreate(&copyChef, &destroyChef, &compareChefs);
 	tournament->judges = listCreate(&copyJudge, &destroyJudge);
-	if ((tournament->chefs == NULL) || (tournament->judges == NULL)) {
+	if(tournament->chefs == NULL || tournament->judges == NULL) {
 		tournamentDestroy(tournament);
-		SAFE_ASSIGN(result,TOURNAMENT_OUT_OF_MEMORY);
-		return NULL;
+		ASSIGN_AND_RETURN(result, TOURNAMENT_OUT_OF_MEMORY, NULL)
 	}
-	SAFE_ASSIGN(result,TOURNAMENT_SUCCESS)
-	return tournament;
+	ASSIGN_AND_RETURN(result, TOURNAMENT_SUCCESS, tournament)
 }
 
 void tournamentDestroy(Tournament tournament) {
-	if (tournament != NULL) {
-		setDestroy(tournament->chefs);
-		listDestroy(tournament->judges);
+	if(tournament == NULL) {
+		return;
 	}
+	listDestroy(tournament->judges);
+	setDestroy(tournament->chefs);
 	free(tournament);
 }
 
-tournamentResult tournamentAddChef(char * const name, Tournament tournament) {
-	if ((name == NULL) || (tournament == NULL)) {
-		return TOURNAMENT_NULL_ARG;
+TournamentResult tournamentAddChef(Tournament tournament, char const* name) {
+	if(tournament == NULL || name == NULL) {
+		return TOURNAMENT_NULL_ARGUMENT;
 	}
 	ChefResult chefResult;
 	Chef chef = chefCreate(name, &chefResult);
-	if (chefResult == CHEF_OUT_OF_MEMORY) {
+	if(chefResult == CHEF_OUT_OF_MEMORY) {
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
+	assert(chefResult == CHEF_SUCCESS);
 	SetResult result = setAdd(tournament->chefs, chef);
-	if (result == SET_ITEM_ALREADY_EXISTS) {
-		chefDestroy(chef);
+	chefDestroy(chef);
+	switch(result) {
+	case SET_ITEM_ALREADY_EXISTS:
 		return TOURNAMENT_CHEF_ALREADY_EXISTS;
-	}
-	if (result == SET_OUT_OF_MEMORY) {
-		chefDestroy(chef);
+	case SET_OUT_OF_MEMORY:
 		return TOURNAMENT_OUT_OF_MEMORY;
+	default:
+		assert(result == SET_SUCCESS);
 	}
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult leadingChef(Tournament tournament, Chef * leader) {
-	bool isBetter;
-	if ((tournament == NULL) || (leader == NULL)) {
-		return TOURNAMENT_NULL_ARG;
+TournamentResult tournamentLeadingChef(Tournament tournament, Chef* leader) {
+	if(tournament == NULL || leader == NULL) {
+		return TOURNAMENT_NULL_ARGUMENT;
 	}
-	if (setGetSize(tournament->chefs) == 0) {
+	if(setGetSize(tournament->chefs) == 0) {
 		return TOURNAMENT_HAS_NO_CHEFS;
 	}
+	bool isBetter;
 	Chef best = (Chef)setGetFirst(tournament->chefs);
-	SET_FOREACH(Chef,chef,tournament->chefs) {
-		chefIsBetterRanked(chef,best,&isBetter);
-		if (isBetter) {
+	SET_FOREACH(Chef, chef, tournament->chefs) {
+		chefIsBetterRanked(chef, best, &isBetter);
+		if(isBetter) {
 			best = chef;
 		}
 	}
@@ -101,52 +126,32 @@ tournamentResult leadingChef(Tournament tournament, Chef * leader) {
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult tournamentAddJudge(char const* nickname, 
-	JudgeByPreference judgeByPreference, Tournament tournament) {
+TournamentResult tournamentAddJudge(Tournament tournament, char const* nickname, 
+	JudgeByPreference judgeByPreference) {
 
 	if(nickname == NULL || tournament == NULL || judgeByPreference == NULL) {
-		return TOURNAMENT_NULL_ARG;
+		return TOURNAMENT_NULL_ARGUMENT;
 	}
-
 	JudgeResult result;
 	Judge judge = judgeCreate(nickname, judgeByPreference, &result);
-	if(judge == NULL) {
+	if(result == JUDGE_OUT_OF_MEMORY) {
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
-	if(listInsertLast(tournament->judges, judge) == LIST_OUT_OF_MEMORY) {
-		judgeDestroy(judge);
-		return TOURNAMENT_OUT_OF_MEMORY;
-	}
+	assert(result == JUDGE_SUCCESS);
+	ListResult listResult = listInsertLast(tournament->judges, judge);
 	judgeDestroy(judge);
+	if(listResult == LIST_OUT_OF_MEMORY) {
+		return TOURNAMENT_OUT_OF_MEMORY;
+	}
+	assert(listResult == LIST_SUCCESS);
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult tournamentGetTopDish(char const* chefName, 
-	Tournament tournament, char** dishName) {
+TournamentResult tournamentGetJudges(Tournament tournament, char*** judges, 
+	int* numberOfJudges) {
 
-	char* name;
-	if(chefName == NULL || tournament == NULL || dishName == NULL) {
-		return TOURNAMENT_NULL_ARG;
-	}
-	SET_FOREACH(Chef,chef,tournament->chefs){
-		chefGetName(chef,&name);
-		if(STR_EQUALS(name,chefName)) {
-			free(name);
-			if(chefGetTopDish(chef, dishName) == CHEF_HAS_NO_DISHES) {
-				return TOURNAMENT_CHEF_HAS_NO_DISHES;
-			}
-			return TOURNAMENT_SUCCESS;
-		}
-		free(name);	
-	}
-	return TOURNAMENT_NO_SUCH_CHEF;
-}
-
-tournamentResult tournamentGetJudges(char*** judges, int* numberOfJudges, 
-	Tournament tournament) {
-
-	if(judges == NULL || numberOfJudges == NULL || tournament == NULL) {
-		return TOURNAMENT_NULL_ARG;
+	if(tournament == NULL || judges == NULL || numberOfJudges == NULL) {
+		return TOURNAMENT_NULL_ARGUMENT;
 	}
 	*numberOfJudges = listGetSize(tournament->judges);
 	if(*numberOfJudges == 0) {
@@ -156,12 +161,17 @@ tournamentResult tournamentGetJudges(char*** judges, int* numberOfJudges,
 	if(judgesArray == NULL) {
 		return TOURNAMENT_OUT_OF_MEMORY;
 	}
+	JudgeResult getResult;
 	char** currentName = judgesArray;
 	LIST_FOREACH(Judge, judge, tournament->judges) {
-		if(judgeGetNickname(judge, currentName) == JUDGE_OUT_OF_MEMORY) {
+		getResult = judgeGetNickname(judge, currentName);
+		switch(getResult) {
+		case JUDGE_OUT_OF_MEMORY:
 			freeArray((void**)judgesArray, currentName-judgesArray);
 			free(judgesArray);
 			return TOURNAMENT_OUT_OF_MEMORY;
+		default:
+			assert(getResult == JUDGE_SUCCESS);
 		}
 		currentName++;
 	}
@@ -169,32 +179,64 @@ tournamentResult tournamentGetJudges(char*** judges, int* numberOfJudges,
 	return TOURNAMENT_SUCCESS;
 }
 
-tournamentResult addDishToChef(char* chefName, char* dishName, DishType type, 
-	int sweetness, int sourness, int saltiness, int priority, 
-	Tournament tournament) {
-
+TournamentResult tournamentAddDishToChef(Tournament tournament, 
+	char const* chefName, char const* dishName, DishType type, Taste taste, 
+	int priority) {
 	
-	
-	Taste taste = {sweetness, sourness, saltiness};
-	DishResult result;
-	Dish dish = dishCreate(dishName, type, taste, &result);
-	if (result == DISH_BAD_PARAM) {
-		return TOURNAMENT_BAD_DISH;
-	}
-	if (result == DISH_OUT_OF_MEMORY) {
-		return TOURNAMENT_OUT_OF_MEMORY;
+	if(tournament == NULL || chefName == NULL || dishName == NULL) {
+		return TOURNAMENT_NULL_ARGUMENT;
 	}
 	Chef target;
-	char* name;
-	SET_FOREACH(Chef, chef, tournament->chefs) {
-
-		chefGetName(chef, &name);
-		if(STR_EQUALS(chefName, name)) {
-			target = chef;
-		}
-		free(name);
+	TournamentResult tournamentResult = findChef(tournament, chefName, 
+		&target);
+	if(tournamentResult != TOURNAMENT_SUCCESS) {
+		return tournamentResult;
 	}
-	chefAddDish(target,dish,priority);
+
+	DishResult dishResult;
+	Dish dish = dishCreate(dishName, type, taste, &dishResult);
+	switch(dishResult) {
+	case DISH_BAD_PARAM:
+		return TOURNAMENT_BAD_PARAM;
+	case DISH_OUT_OF_MEMORY:
+		return TOURNAMENT_OUT_OF_MEMORY;
+	default:
+		assert(dishResult == DISH_SUCCESS);
+	}
+
+	ChefResult chefResult = chefAddDish(target, dish, priority);
 	free(dish);
+	switch(chefResult) {
+	case CHEF_BAD_PRIORITY:
+		return TOURNAMENT_BAD_PARAM;
+	case CHEF_OUT_OF_MEMORY:
+		return TOURNAMENT_OUT_OF_MEMORY;
+	default:
+		assert(chefResult == CHEF_SUCCESS);
+	}
+	return TOURNAMENT_SUCCESS;
+}
+
+TournamentResult tournamentGetTopDish(Tournament tournament, 
+	char const* chefName, char** dishName) {
+
+	if(chefName == NULL || tournament == NULL || dishName == NULL) {
+		return TOURNAMENT_NULL_ARGUMENT;
+	}
+	Chef chef;
+	TournamentResult tournamentResult = findChef(tournament, chefName, 
+		&chef);
+	if(tournamentResult != TOURNAMENT_SUCCESS) {
+		return tournamentResult;
+	}
+	ChefResult chefResult = chefGetTopDishName(chef, dishName);
+	switch(chefResult) {
+	case CHEF_HAS_NO_DISHES:
+		return TOURNAMENT_CHEF_HAS_NO_DISHES;
+	case CHEF_OUT_OF_MEMORY:
+		return TOURNAMENT_OUT_OF_MEMORY;
+	default:
+		assert(chefResult == CHEF_SUCCESS);
+	}
 	return TOURNAMENT_SUCCESS;
 }

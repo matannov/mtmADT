@@ -77,7 +77,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority);
  * @return Result success or error code.
  *	Error codes: CHEF_NULL_ARGUMENT, CHEF_HAS_NO_DISHES, CHEF_OUT_OF_MEMORY
  */
-ChefResult chefGetTopDish(Chef chef, char** name);
+ChefResult chefGetTopDishName(Chef chef, char** name);
 
 /*
  * Get the number of points the chef has.
@@ -90,10 +90,22 @@ ChefResult chefGetTopDish(Chef chef, char** name);
 ChefResult chefGetPoints(Chef chef, int* points);
 
 /*
+ * compare between two chef names lexicographically.
+ * 
+ * @param first First chef.
+ * @param second Second chef.
+ * @param result Compare result will be set here:
+ * 	positive if the first name is greater,
+ * 	0 if they're equal,
+ *	negative if the second is greater.
+ * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT
+ */
+ChefResult chefCompareNames(Chef first, Chef second, int* result);
+
+/*
  * Check if first chef is currently better ranked than the second.
- *
- * The chef is better ranked if he has more points, or if he has equal 
- * points and his name is greater alphabetically
+ * The chef is better ranked if he has more points.
  * 
  * @param first First chef.
  * @param second Second chef.

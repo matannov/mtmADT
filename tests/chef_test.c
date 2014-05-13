@@ -56,7 +56,7 @@ static bool chefGetNameTest() {
 //ChefResult chefAddDish(Chef chef, Dish dish, int priority);
 
 
-//ChefResult chefGetTopDish(Chef chef, char* buffer);
+//ChefResult chefGetTopDishName(Chef chef, char* buffer);
 //hmm how about really getting the dish?
 
 //ChefResult chefGetPoints(Chef chef, int* points);

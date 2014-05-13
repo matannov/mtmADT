@@ -12,12 +12,12 @@ struct chef {
 
 /* wrap dishCopy for use in priority queue */
 static PriorityQueueElement copyDish(PriorityQueueElement dish) {
-	return (PriorityQueueElement)dishCopy((Dish)dish);
+	return dishCopy(dish);
 }
 
 /* wrap dishDestroy for use in priority queue */
 static void destroyDish(PriorityQueueElement dish) {
-	dishDestroy((Dish)dish);
+	dishDestroy(dish);
 }
 
 Chef chefCreate(char const* name, ChefResult* result) {
@@ -88,7 +88,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
 	return CHEF_SUCCESS;
 }
 
-ChefResult chefGetTopDish(Chef chef, char** name) {
+ChefResult chefGetTopDishName(Chef chef, char** name) {
 	if(chef == NULL || name == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
@@ -110,12 +110,18 @@ ChefResult chefGetPoints(Chef chef, int* points) {
 	return CHEF_SUCCESS;
 }
 
+ChefResult chefCompareNames(Chef first, Chef second, int* result) {
+	if(first == NULL || second == NULL || result == NULL) {
+		return CHEF_NULL_ARGUMENT;
+	}
+	*result = strcmp(first->name, second->name);
+	return CHEF_SUCCESS;
+}
+
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
 	if(first == NULL || second == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	*firstBetter = (first->points > second->points ||
-			(first->points == second->points && 
-			STR_IS_PRIOR(first->name, second->name)));
+	*firstBetter = (first->points > second->points);
 	return CHEF_SUCCESS;
 }

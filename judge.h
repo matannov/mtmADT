@@ -32,6 +32,7 @@ typedef struct judge *Judge;
  * Create a new judge with given nickname and preference function.
  *
  * @param nickname Nickname for new judge. The string is copied.
+ * @param judgeByPreference Preference function to affect the judge's taste
  * @param result Result success or error code.
  * 	If "result" is null, it is ignored and no code is returned.
  *	Error codes: JUDGE_NULL_ARGUMENT, JUDGE_OUT_OF_MEMORY
