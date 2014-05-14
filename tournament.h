@@ -115,5 +115,22 @@ TournamentResult tournamentAddDishToChef(Tournament tournament,
  */
 TournamentResult tournamentGetTopDish(Tournament tournament, 
 	char const* chefName, char** dishName);
+	
+/*
+ * Get the name of top priority dish from a specific chef.
+ * If some dishes have the same priority, the dish that was added first is 
+ * returned.
+ *
+ * @param tournament Tournament to get from.
+ * @param chefName Name of the chef in tournament.
+ * @param dishName String pointer will be written here. 
+ * 	User is responsible to free this memory.
+ * @return Result success or error code.
+ *	Error codes: TOURNAMENT_NULL_ARGUMENT, TOURNAMENT_OUT_OF_MEMORY,
+ *	TOURNAMENT_NO_SUCH_CHEF, TOURNAMENT_CHEF_HAS_NO_DISHES
+ */
+TournamentResult tournamentCompete(Tournament tournament, 
+	char * firstChef, char * secondChef, char *** resigningJudges,
+	int * numberJudgesResigned, bool * firstChefWins, bool * secondChefWins);
 
 #endif // _TOURNAMENT_H

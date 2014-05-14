@@ -89,7 +89,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
 }
 
 ChefResult chefGetTopDishName(Chef chef, char** name) {
-	if(chef == NULL || name == NULL) {
+	if((chef == NULL) || (name == NULL)) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	Dish dish = priorityQueueTop(chef->dishes);

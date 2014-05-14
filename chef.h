@@ -115,4 +115,10 @@ ChefResult chefCompareNames(Chef first, Chef second, int* result);
  */
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter);
 
+/*
+
+*/
+ChefResult chefPopTopDish(Chef chef, Dish * dish, bool * lastDish);
+
+ChefResult chefGivePoint(Chef chef);
 #endif // _CHEF_H

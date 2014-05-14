@@ -6,6 +6,7 @@
 
 #define DISH_TYPE_MIN 1
 #define DISH_TYPE_MAX (DISH_TYPES_END-1)
+
 typedef enum {
 	DISH_APPETIZER = DISH_TYPE_MIN,
 	DISH_ENTREE,

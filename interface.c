@@ -13,6 +13,7 @@
 		mtmPrintErrorMessage(stdout,MTM_INVALID_INPUT_COMMAND_PARAMETERS); \
 		return; \
 	} \
+	printf("got %s",holder); \
 	int param = atoi(holder);
 	
 #define CHECK_OVERFLOW \
@@ -206,7 +207,10 @@ static void compete(Tournament tournament) {
 static void proccessCommand (char * line, Tournament tournament) {
 	char * primaryCommand = strtok(line," \n");
 	char * secondaryCommand = strtok(NULL," \n");
-
+	if ((primaryCommand == NULL) || (secondaryCommand == NULL)) {
+		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
+		return;
+	}
 	if (STR_EQUALS(primaryCommand,"reset")) {	
 		printf("reseting...\n");
 		reset(&tournament);
@@ -230,6 +234,9 @@ static void proccessCommand (char * line, Tournament tournament) {
 		else if (STR_EQUALS(secondaryCommand,"top-dish")) {
 			printTopDish(tournament);
 		}
+		else {
+			mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
+		}
 	}
 	else if (STR_EQUALS(primaryCommand,"judge")) {
 		if (STR_EQUALS(secondaryCommand,"add")) {
@@ -238,6 +245,12 @@ static void proccessCommand (char * line, Tournament tournament) {
 		else if (STR_EQUALS(secondaryCommand,"print")) {
 			printJudges(tournament);
 		}
+		else {
+			mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
+		}
+	}
+	else {
+		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 	}
 }
 

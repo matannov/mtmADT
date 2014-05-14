@@ -11,6 +11,7 @@ struct dish {
 };
 
 Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result) {
+	printf("calling dishcreate");
 	if(name == NULL) {
 		ASSIGN_AND_RETURN(result, DISH_NULL_ARGUMENT, NULL)
 	}
@@ -18,7 +19,7 @@ Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result
 		!IN_RANGE(taste.sourness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
 		!IN_RANGE(taste.saltiness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
 		!IN_RANGE(type, DISH_TYPE_MIN, DISH_TYPE_MAX)) {
-
+		printf("dish fail %d %d %d %d",taste.sweetness,taste.sourness,taste.saltiness,type);
 		ASSIGN_AND_RETURN(result, DISH_BAD_PARAM, NULL)
 	}
 
@@ -45,6 +46,7 @@ void dishDestroy(Dish dish) {
 }
 
 Dish dishCopy(Dish source) {
+	printf("copying dish with %s %d",source->name, source->type);
 	if(source == NULL) {
 		return NULL;
 	}

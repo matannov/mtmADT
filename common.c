@@ -7,6 +7,7 @@ char* cloneString(const char* str) {
 	if(temp != NULL) {
 		strcpy(temp, str);
 	}
+	//printf("\noriginal: %s copy: %s\n", str, temp);
 	return temp;
 }
 
