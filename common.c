@@ -15,4 +15,5 @@ void freeArray(void** start, int size) {
 		free(*start);
 		start++;
 	}
+	free(start);
 }

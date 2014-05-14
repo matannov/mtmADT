@@ -138,68 +138,61 @@ static void addDish (Tournament tournament) {
 	CHECK_OVERFLOW;
 	Taste taste = {sweetness, sourness, saltyness};
 	TournamentResult result = tournamentAddDishToChef(tournament, chefName, dishName, dishType, taste, priority);
-	if(result != TOURNAMENT_SUCCESS) {
-		switch(result) {
-		case TOURNAMENT_OUT_OF_MEMORY:
-			handleOutOfMemory(tournament);
-			break;
-		case TOURNAMENT_NO_SUCH_CHEF:
-			mtmPrintErrorMessage(stderr, MTM_CHEF_NOT_FOUND);
-			break;
-		case TOURNAMENT_BAD_PARAM:
-			mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
-			break;
-		default:
-			assert(false); //unhandled error
-		}
+	switch(result) {
+	case TOURNAMENT_OUT_OF_MEMORY:
+		handleOutOfMemory(tournament);
+		break;
+	case TOURNAMENT_NO_SUCH_CHEF:
+		mtmPrintErrorMessage(stderr, MTM_CHEF_NOT_FOUND);
+		break;
+	case TOURNAMENT_BAD_PARAM:
+		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
+		break;
+	default:
+		assert(result == TOURNAMENT_SUCCESS);
 	}
 }
 
 static void compete(Tournament tournament) {
-	char * chefA = strtok(NULL," \n");
-	char * chefB = strtok(NULL," \n");
-	if (chefB == NULL) {
-		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
-		return;
-	}
-	CHECK_OVERFLOW;
-	char ** resigningJudges;
-	int numberJudgesResigned;
+	char* chefName1 = strtok(NULL," \n");
+	char* chefName2 = strtok(NULL," \n");
+	char** resigningJudges;
+	int resigningCount;
 	bool firstChefWins, secondChefWins;
-	TournamentResult result = tournamentCompete(tournament, 
-	chefA, chefB, &resigningJudges,
-	&numberJudgesResigned, &firstChefWins, &secondChefWins);
-	if (result == TOURNAMENT_NO_SUCH_CHEF) {
-		mtmPrintErrorMessage(stderr,MTM_CHEF_NOT_FOUND);
+	TournamentResult result = tournamentCompete(tournament, chefName1, 
+		chefName2, &resigningJudges, &resigningCount, &firstChefWins, 
+		&secondChefWins);
+	switch(result) {
+	case TOURNAMENT_OUT_OF_MEMORY:
+		handleOutOfMemory(tournament);
+	case TOURNAMENT_NO_SUCH_CHEF:
+		mtmPrintErrorMessage(stderr, MTM_CHEF_NOT_FOUND);
 		return;
-	}
-	if (strcmp(chefA,chefB) == 0) {
-		mtmPrintErrorMessage(stderr,MTM_SAME_CHEF);
+	case TOURNAMENT_SAME_CHEF:
+		mtmPrintErrorMessage(stderr, MTM_SAME_CHEF);
 		return;
+	case TOURNAMENT_CHEF_HAS_NO_DISHES:
+		mtmPrintErrorMessage(stderr, MTM_CHEF_HAS_NO_DISHES);
+		return;
+	default:
+		assert(result == TOURNAMENT_SUCCESS || 
+			result == TOURNAMENT_HAS_NO_JUDGES);
 	}
-	if (result == TOURNAMENT_HAS_NO_JUDGES) {
+	for(int i=0; i<resigningCount; i++) {
+		mtmPrintJudgeResignationMessage(stdout,resigningJudges[i]);
+		free(resigningJudges[i]);
+	}
+	free(resigningJudges);
+	if(result == TOURNAMENT_HAS_NO_JUDGES) {
 		mtmPrintErrorMessage(stderr,MTM_NO_JUDGES);
 		return;
 	}
-	if (result == TOURNAMENT_CHEF_HAS_NO_DISHES) {
-		mtmPrintErrorMessage(stderr,MTM_CHEF_HAS_NO_DISHES);
-		return;
-	}
-	if (numberJudgesResigned > 0) {
-		for (int i=0;i<numberJudgesResigned;i++) {
-			mtmPrintJudgeResignationMessage(stdout,resigningJudges[i]);
-			free(resigningJudges[i]);
-		}
-	}
-	free(resigningJudges);
-	if (firstChefWins) {
-		mtmPrintWinningAndLosingChefs(stdout, chefA, chefB);
-	}
-	else if (secondChefWins) {
-		mtmPrintWinningAndLosingChefs(stdout, chefB, chefA);
-	}
-	else {
-		mtmPrintTieBetweenTwoChefs(stdout, chefA, chefB);
+	if(firstChefWins) {
+		mtmPrintWinningAndLosingChefs(stdout, chefName1, chefName2);
+	} else if(secondChefWins) {
+		mtmPrintWinningAndLosingChefs(stdout, chefName2, chefName2);
+	} else {
+		mtmPrintTieBetweenTwoChefs(stdout, chefName1, chefName2);
 	}
 }
 	

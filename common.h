@@ -27,10 +27,14 @@ typedef enum {SUCCESS, FAILURE} Result;
 /* check if string is prior lexicographically */
 #define STR_IS_PRIOR(a, b) (strcmp((a), (b)) < 0)
 
+/* calc distance between two numbers */
+#define DISTANCE(a, b) ((a) > (b) ? (a)-(b) : (b)-(a))
+
 /* allocate a new string and copy to it. return NULL if out of memory */
 char* cloneString(const char* str);
 
-/* free an array of pointers */
+/* frees all the pointers in the array pointed by "start"
+ * and frees "start" itself*/
 void freeArray(void** start, int size);
 
-#endif
+#endif //_COMMON_H

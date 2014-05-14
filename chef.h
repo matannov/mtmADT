@@ -115,4 +115,31 @@ ChefResult chefCompareNames(Chef first, Chef second, int* result);
  */
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter);
 
+/*
+ * Check if a chef has one dish atleast.
+ * 
+ * @param chef The chef to check.
+ * @return True if chef has a dish, false if not or if NULL argument.
+ */
+bool chefHasDish(Chef chef);
+
+/*
+ * Get chef's top dish. The dish is removed from the chef.
+ * 
+ * @param chef The chef to take from.
+ * @param dish The top dish. User is responsible to destroy it.
+ * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT, CHEF_HAS_NO_DISHES, CHEF_OUT_OF_MEMORY
+ */
+ChefResult chefTakeTopDish(Chef chef, Dish* dish);
+
+/*
+ * Give chef one point.
+ * 
+ * @param chef The chef to give point to.
+ * @return Result success or error code.
+ *	Error codes: CHEF_NULL_ARGUMENT
+ */
+ChefResult chefGivePoint(Chef chef);
+
 #endif // _CHEF_H
