@@ -154,7 +154,7 @@ TournamentResult tournamentCompete(Tournament tournament,
 	TOURNAMENT_BAD_PREFERENCE_RESULT, TOURNAMENT_HAS_NO_JUDGES
  */
 TournamentResult tournamentCompete(Tournament tournament, 
-	char const* chefName1, char const* chefName2, char*** resigningJudges,
+	char * chefName1, char * chefName2, char*** resigningJudges,
 	int* resigningCount, bool* firstChefWins, bool* secondChefWins);
 
 #endif // _TOURNAMENT_H

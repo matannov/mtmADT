@@ -1,4 +1,3 @@
-vvvvvvvvvvvvvvvvvvvv
 #include <stdlib.h>
 #include <string.h>
 #include "common.h"
@@ -18,4 +17,3 @@ void freeArray(void** start, int size) {
 	}
 	free(start);
 }
-^^^^^^^^^^^^^^^^^^^^

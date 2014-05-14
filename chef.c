@@ -126,33 +126,32 @@ ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
 	return CHEF_SUCCESS;
 }
 
-bool chefHasDish(Chef chef) {
-	if(chef == NULL) {
-		return false;
-	}
-	return (priorityQueueGetSize(chef->dishes) != 0);
-}
-
-ChefResult chefTakeTopDish(Chef chef, Dish* dish) {
-	if(chef == NULL || dish == NULL) {
+ChefResult chefTakeTopDish(Chef chef, Dish * dish) {
+	if ((chef == NULL) || (dish == NULL)) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	Dish tempDish = priorityQueueTop(chef->dishes);
-	if(tempDish == NULL) {
+	*dish = dishCopy(priorityQueueTop(chef->dishes));
+	if (*dish == NULL) {
 		return CHEF_HAS_NO_DISHES;
-	}
-	*dish = dishCopy(tempDish);
-	if(*dish == NULL) {
-		return CHEF_OUT_OF_MEMORY;
 	}
 	priorityQueuePop(chef->dishes);
 	return CHEF_SUCCESS;
 }
 
 ChefResult chefGivePoint(Chef chef) {
-	if(chef == NULL) {
+	if (chef == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	chef->points++;
 	return CHEF_SUCCESS;
+}
+
+bool chefHasDish(Chef chef) {
+	if (chef == NULL) {
+		return false;
+	}
+	if (priorityQueueGetSize(chef->dishes) > 0) {
+		return true;
+	}
+	return false;
 }

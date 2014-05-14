@@ -284,7 +284,7 @@ TournamentResult competeInitialize(Tournament tournament,
  * chefPoints1 and chefPoints2 are also incremented.
  * error codes: TOURNAMENT_BAD_PREFERENCE_RESULT, TOURNAMENT_OUT_OF_MEMORY */
 static TournamentResult competeTwoDishes(Tournament tournament, Dish dish1, 
-	Dish dish2, char const* chefName1, char const* chefName2, 
+	Dish dish2, char * chefName1, char * chefName2, 
 	char*** resigningJudges, int* resigningCount, int* chefPoints1, 
 	int* chefPoints2) {
 
@@ -325,7 +325,7 @@ static TournamentResult competeTwoDishes(Tournament tournament, Dish dish1,
 }
 
 TournamentResult tournamentCompete(Tournament tournament, 
-	char const* chefName1, char const* chefName2, char*** resigningJudges,
+	char * chefName1, char * chefName2, char*** resigningJudges,
 	int* resigningCount, bool* firstChefWins, bool* secondChefWins) {
 	
 	TournamentResult result;

@@ -133,4 +133,6 @@ ChefResult chefTakeTopDish(Chef chef, Dish* dish);
  *	Error codes: CHEF_NULL_ARGUMENT
  */
 ChefResult chefGivePoint(Chef chef);
+
+bool chefHasDish(Chef chef);
 #endif // _CHEF_H
