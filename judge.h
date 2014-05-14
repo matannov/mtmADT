@@ -92,6 +92,7 @@ JudgeResult judgeGetNickname(Judge judge, char** nickname);
  *	JUDGE_BAD_PREFERENCE_RESULT (preference function returned invalid value)
  */
 JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2, 
-	char* chefName1, char* chefName2, bool* dish1Wins, bool* judgeQuits);
+	char const* chefName1, char const* chefName2, bool* dish1Wins, 
+	bool* judgeQuits);
 
 #endif // _JUDGE_H

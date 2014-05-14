@@ -9,11 +9,13 @@ typedef enum {
 	TOURNAMENT_OUT_OF_MEMORY,
 	TOURNAMENT_NULL_ARGUMENT,
 	TOURNAMENT_BAD_PARAM,
-	TOURNAMENT_NO_SUCH_CHEF,
-	TOURNAMENT_CHEF_HAS_NO_DISHES,
 	TOURNAMENT_CHEF_ALREADY_EXISTS,
 	TOURNAMENT_HAS_NO_CHEFS,
-	TOURNAMENT_HAS_NO_JUDGES
+	TOURNAMENT_HAS_NO_JUDGES,
+	TOURNAMENT_NO_SUCH_CHEF,
+	TOURNAMENT_SAME_CHEF,
+	TOURNAMENT_CHEF_HAS_NO_DISHES,
+	TOURNAMENT_BAD_PREFERENCE_RESULT
 } TournamentResult;
 
 typedef struct tournament *Tournament;
@@ -132,5 +134,27 @@ TournamentResult tournamentGetTopDish(Tournament tournament,
 TournamentResult tournamentCompete(Tournament tournament, 
 	char * firstChef, char * secondChef, char *** resigningJudges,
 	int * numberJudgesResigned, bool * firstChefWins, bool * secondChefWins);
+
+/*
+ * Compete between two chefs
+ *
+ * @param tournament Tournament chefs are in.
+ * @param chefName1 Name of first chef.
+ * @param chefName2 Name of second chef.
+ * @param resigningJudges pointer to an array of strings. The array is filled
+ *	with nicknames of all the resigning judges.
+ * 	User is responsible to free all strings and the array in case
+ *	TOURNAMENT_SUCCESS or TOURNAMENT_HAS_NO_JUDGES are returned.
+ * @param resigningCount Number of resigning judges.
+ * @param firstChefWins True if first chef wins, False otherwise.
+ * @param secondChefWins True if second chef wins, False otherwise.
+ * @return Result success or error code.
+ *	Error codes: TOURNAMENT_NULL_ARGUMENT, TOURNAMENT_SAME_CHEF,
+ * 	TOURNAMENT_CHEF_HAS_NO_DISHES, TOURNAMENT_OUT_OF_MEMORY,
+	TOURNAMENT_BAD_PREFERENCE_RESULT, TOURNAMENT_HAS_NO_JUDGES
+ */
+TournamentResult tournamentCompete(Tournament tournament, 
+	char const* chefName1, char const* chefName2, char*** resigningJudges,
+	int* resigningCount, bool* firstChefWins, bool* secondChefWins);
 
 #endif // _TOURNAMENT_H

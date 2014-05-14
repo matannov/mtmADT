@@ -38,6 +38,13 @@ static void destroyJudge(ListElement judge) {
 	judgeDestroy(judge);
 }
 
+/* macro to call findChef and also return in case of error */
+#define FIND_CHEF_RETURN_IF_ERROR(tournament, result, chefName, chef) \
+	(result) = findChef((tournament), (chefName), (chef)); \
+	if((result) != TOURNAMENT_SUCCESS) { \
+		return (result); \
+	}
+
 /* find a chef in the set. 
  * error codes: TOURNAMENT_NO_SUCH_CHEF, TOURNAMENT_OUT_OF_MEMORY */
 static TournamentResult findChef(Tournament tournament, char const* name, 
@@ -45,18 +52,19 @@ static TournamentResult findChef(Tournament tournament, char const* name,
 
 	ChefResult getResult;
 	char* currentName;
+	bool foundName;
 	SET_FOREACH(Chef, chef, tournament->chefs) {
 		getResult = chefGetName(chef, &currentName);
 		if(getResult == CHEF_OUT_OF_MEMORY) {
 			return TOURNAMENT_OUT_OF_MEMORY;
 		}
 		assert(getResult == CHEF_SUCCESS);
-		if(STR_EQUALS(currentName, name)) {
-			free(currentName);
+		foundName = STR_EQUALS(currentName, name);
+		free(currentName);
+		if(foundName){
 			*matchingChef = chef;
 			return TOURNAMENT_SUCCESS;
 		}
-		free(currentName);
 	}
 	return TOURNAMENT_NO_SUCH_CHEF;
 }
@@ -168,7 +176,6 @@ TournamentResult tournamentGetJudges(Tournament tournament, char*** judges,
 		switch(getResult) {
 		case JUDGE_OUT_OF_MEMORY:
 			freeArray((void**)judgesArray, currentName-judgesArray);
-			free(judgesArray);
 			return TOURNAMENT_OUT_OF_MEMORY;
 		default:
 			assert(getResult == JUDGE_SUCCESS);
@@ -225,11 +232,8 @@ TournamentResult tournamentGetTopDish(Tournament tournament,
 		return TOURNAMENT_NULL_ARGUMENT;
 	}
 	Chef chef;
-	TournamentResult tournamentResult = findChef(tournament, chefName, 
-		&chef);
-	if(tournamentResult != TOURNAMENT_SUCCESS) {
-		return tournamentResult;
-	}
+	TournamentResult result;
+	FIND_CHEF_RETURN_IF_ERROR(tournament, result, chefName, &chef)
 	ChefResult chefResult = chefGetTopDishName(chef, dishName);
 	switch(chefResult) {
 	case CHEF_HAS_NO_DISHES:
@@ -242,86 +246,128 @@ TournamentResult tournamentGetTopDish(Tournament tournament,
 	return TOURNAMENT_SUCCESS;
 }
 
-static TournamentResult tournamentFindChef(Tournament tournament, char * chefName, Chef * chef) {
-	char * target;
-	*chef = NULL;
-	SET_FOREACH(Chef, chefIterator, tournament->chefs) {
-		chefGetName(chefIterator,&target);
-		if (strcmp(target, chefName) == 0) {
-			*chef = chefIterator;
-		}
-		free(target);
+/* initialization for compete put into seperate function
+ * error codes: TOURNAMENT_NULL_ARGUMENT, TOURNAMENT_SAME_CHEF,
+ * TOURNAMENT_CHEF_HAS_NO_DISHES, TOURNAMENT_OUT_OF_MEMORY */
+TournamentResult competeInitialize(Tournament tournament, 
+	char const* chefName1, char const* chefName2, char*** resigningJudges,
+	int* resigningCount, bool* firstWins, bool* secondWins, 
+	int* initialJudges, Chef* chef1, Chef* chef2) {
+
+	if(tournament == NULL || chefName1 == NULL || chefName2 == NULL ||
+		resigningJudges == NULL || resigningCount == NULL ||
+		firstWins == NULL || secondWins == NULL) {
+		return TOURNAMENT_NULL_ARGUMENT;
 	}
-	if (*chef == NULL) {
-		return TOURNAMENT_NO_SUCH_CHEF;
+	TournamentResult result;
+	FIND_CHEF_RETURN_IF_ERROR(tournament, result, chefName1, chef1)
+	FIND_CHEF_RETURN_IF_ERROR(tournament, result, chefName2, chef2)
+	if(STR_EQUALS(chefName1, chefName2)) {
+		return TOURNAMENT_SAME_CHEF;
+	}
+	if(!chefHasDish(*chef1) || !chefHasDish(*chef2)) {
+		return TOURNAMENT_CHEF_HAS_NO_DISHES;
+	}
+	*resigningCount = 0;
+	*initialJudges = listGetSize(tournament->judges);	
+	*resigningJudges = malloc(sizeof(**resigningJudges)*(*initialJudges));
+	if(*resigningJudges == NULL) {
+		return TOURNAMENT_OUT_OF_MEMORY;
+	}
+	return TOURNAMENT_SUCCESS;
+}
+
+/* compete only between two dishes. 
+ * resigningJudges is assumed to be already allocated. more names are added
+ * at "resigningCount" index.
+ * resigningCount is assumed to be initialized. it is incremented.
+ * chefPoints1 and chefPoints2 are also incremented.
+ * error codes: TOURNAMENT_BAD_PREFERENCE_RESULT, TOURNAMENT_OUT_OF_MEMORY */
+static TournamentResult competeTwoDishes(Tournament tournament, Dish dish1, 
+	Dish dish2, char const* chefName1, char const* chefName2, 
+	char*** resigningJudges, int* resigningCount, int* chefPoints1, 
+	int* chefPoints2) {
+
+	Judge currentJudge = listGetFirst(tournament->judges);
+	int remainingJudges = listGetSize(tournament->judges);
+	int dishPoints1 = 0, dishPoints2 = 0;
+	while(DISTANCE(dishPoints1, dishPoints2) < remainingJudges) {
+		bool firstWins, resignation;
+		JudgeResult judgeResult = judgeJudgeDishes(currentJudge, dish1, dish2, 
+			chefName1, chefName2, &firstWins, &resignation);
+		if(judgeResult == JUDGE_BAD_PREFERENCE_RESULT) {
+			return TOURNAMENT_BAD_PREFERENCE_RESULT;
+		}
+		assert(judgeResult == JUDGE_SUCCESS);
+		if(firstWins) {
+			dishPoints1++;
+		} else {
+			dishPoints2++;
+		}
+		if(resignation) {
+			judgeResult = judgeGetNickname(currentJudge,
+				resigningJudges[*resigningCount]);
+			if(judgeResult == JUDGE_OUT_OF_MEMORY) {
+				return TOURNAMENT_OUT_OF_MEMORY;
+			}
+			(*resigningCount)++;
+			listRemoveCurrent(tournament->judges);
+		}
+		currentJudge = listGetNext(tournament->judges);
+		remainingJudges--;
+	}
+	if(dishPoints1 > dishPoints2) {
+		(*chefPoints1)++;
+	} else if(dishPoints2 > dishPoints1) {
+		(*chefPoints2)++;
 	}
 	return TOURNAMENT_SUCCESS;
 }
 
 TournamentResult tournamentCompete(Tournament tournament, 
-	char * firstChef, char * secondChef, char *** resigningJudges,
-	int * numberJudgesResigned, bool * firstChefWins, bool * secondChefWins) {
-		Chef first, second;
-		Dish firstDish, secondDish;
-		bool firstDone, secondDone, firstWins, resignation;
-		int firstPoints = 0, secondPoints = 0, numJudges, remainingJudges;
-		char * name;
-		Judge judge;
-		TournamentResult result;
-		*numberJudgesResigned = 0;
-		
-	if ((tournament == NULL) || (firstChef == NULL) || (secondChef == NULL) ||
-		(resigningJudges == NULL) || (numberJudgesResigned == NULL) ||
-		(firstChefWins == NULL) || (secondChefWins == NULL)) {
-			return TOURNAMENT_NULL_ARGUMENT;
-	}
-
-	result = tournamentFindChef(tournament, firstChef, &first);
-	if (result != TOURNAMENT_SUCCESS) {
+	char const* chefName1, char const* chefName2, char*** resigningJudges,
+	int* resigningCount, bool* firstChefWins, bool* secondChefWins) {
+	
+	TournamentResult result;
+	int initialJudges;
+	Chef chef1, chef2;	
+	result = competeInitialize(tournament, chefName1, chefName2, 
+		resigningJudges, resigningCount, firstChefWins, secondChefWins,
+		&initialJudges, &chef1, &chef2);
+	if(result != TOURNAMENT_SUCCESS) {
 		return result;
 	}
-	result = tournamentFindChef(tournament, secondChef, &second);
-	if (result != TOURNAMENT_SUCCESS) {
-		return result;
-	}
-	numJudges = listGetSize(tournament->judges);
-	if (numJudges == 0) {
-		return TOURNAMENT_HAS_NO_JUDGES;
-	}
-	remainingJudges = numJudges;
-	*resigningJudges = (char**)malloc(sizeof(char**)*numJudges);
-	if ((chefGetTopDishName(first,&name) == CHEF_HAS_NO_DISHES) || (chefGetTopDishName(second,&name) == CHEF_HAS_NO_DISHES)) {
-		return TOURNAMENT_CHEF_HAS_NO_DISHES;
-	}
+	int chefPoints1 = 0, chefPoints2 = 0;
 	do {
-	chefPopTopDish(first, &firstDish, &firstDone);
-	chefPopTopDish(second, &secondDish, &secondDone);
-	judge = listGetFirst(tournament->judges);
-	while ((firstPoints - secondPoints < remainingJudges) && (secondPoints - firstPoints < remainingJudges)) {
-		judgeJudgeDishes(judge, firstDish, secondDish, firstChef, secondChef,
-						&firstWins, &resignation);
-		if (firstWins) {
-			firstPoints++;
+		if(*resigningCount == initialJudges) {
+			return TOURNAMENT_HAS_NO_JUDGES;
 		}
-		else {
-			secondPoints++;
+		Dish dish1 = NULL, dish2 = NULL;
+		chefTakeTopDish(chef1, &dish1);
+		chefTakeTopDish(chef2, &dish2);
+		if(dish1 == NULL || dish2 == NULL) {
+			dishDestroy(dish1);
+			dishDestroy(dish2);
+			freeArray((void**)*resigningJudges, *resigningCount);
+			return TOURNAMENT_OUT_OF_MEMORY;
 		}
-		if (resignation) {
-			judgeGetNickname(judge,resigningJudges[*numberJudgesResigned]);
-			(*numberJudgesResigned)++;
-			listRemoveCurrent(tournament->judges);
-		}
-		judge = listGetNext(tournament->judges);
-		remainingJudges--;
-	}
-	} while (!firstDone && !secondDone);
-	*firstChefWins = firstPoints > secondPoints;
-	*secondChefWins = secondPoints > firstPoints;
-	if (*firstChefWins) {
-		chefGivePoint(first);
-	}
-	if (*secondChefWins) {
-		chefGivePoint(second);
+		result = competeTwoDishes(tournament, dish1, dish2, chefName1, 
+			chefName2, resigningJudges, resigningCount,
+			&chefPoints1, &chefPoints2);
+		dishDestroy(dish1);
+		dishDestroy(dish2);
+		if(result != TOURNAMENT_SUCCESS) {
+			freeArray((void**)*resigningJudges, *resigningCount);
+			return result;
+		}	
+	} while(chefHasDish(chef1) && chefHasDish(chef2));
+
+	*firstChefWins = chefPoints1 > chefPoints2;
+	*secondChefWins = chefPoints2 > chefPoints1;
+	if(*firstChefWins) {
+		chefGivePoint(chef1);
+	} else if(*secondChefWins) {
+		chefGivePoint(chef2);
 	}
 	return TOURNAMENT_SUCCESS;
 }

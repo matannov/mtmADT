@@ -114,7 +114,8 @@ JudgeResult judgeGetNickname(Judge judge, char** nickname) {
 }
 
 JudgeResult judgeJudgeDishes(Judge judge, Dish dish1, Dish dish2, 
-	char* chefName1, char* chefName2, bool* dish1Wins, bool* judgeQuits) {
+	char const* chefName1, char const* chefName2, bool* dish1Wins, 
+	bool* judgeQuits) {
 
 	if(judge == NULL || dish1 == NULL || dish2 == NULL || chefName1 == NULL
 		|| chefName2 == NULL || dish1Wins == NULL || judgeQuits == NULL) {
