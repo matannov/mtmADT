@@ -25,7 +25,7 @@ typedef struct {
 	int sweetness, sourness, saltiness;
 } Taste;
 
-typedef struct dish* Dish;
+typedef struct Dish_t *Dish;
 
 /*
  * Create a new dish with given params.

@@ -14,7 +14,7 @@ typedef enum {
 	CHEF_HAS_NO_DISHES
 } ChefResult;
 
-typedef struct chef* Chef;
+typedef struct Chef_t *Chef;
 
 /*
  * Create a new chef with given name.
@@ -116,6 +116,14 @@ ChefResult chefCompareNames(Chef first, Chef second, int* result);
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter);
 
 /*
+ * Check if a chef has one dish atleast.
+ * 
+ * @param chef The chef to check.
+ * @return True if chef has a dish, false if not or if NULL argument.
+ */
+bool chefHasDish(Chef chef);
+
+/*
  * Get chef's top dish. The dish is removed from the chef.
  * 
  * @param chef The chef to take from.
@@ -134,5 +142,4 @@ ChefResult chefTakeTopDish(Chef chef, Dish* dish);
  */
 ChefResult chefGivePoint(Chef chef);
 
-bool chefHasDish(Chef chef);
 #endif // _CHEF_H

@@ -4,7 +4,7 @@
 #include "priority_queue.h"
 #include "chef.h"
 
-struct chef {
+struct Chef_t {
 	char* name;
 	PriorityQueue dishes;
 	int points;
@@ -75,13 +75,14 @@ ChefResult chefGetName(Chef chef, char** name) {
 }
 
 ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
-	if(chef == NULL) {
+	if(chef == NULL || dish == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	if(priority < CHEF_DISH_PRIORITY_MIN) {
 		return CHEF_BAD_PRIORITY;
 	}
-	PriorityQueueResult result = priorityQueueAdd(chef->dishes, dish, priority);
+	PriorityQueueResult result = priorityQueueAdd(chef->dishes, dish, 
+		priority);
 	if(result == PRIORITY_QUEUE_OUT_OF_MEMORY) {
 		return CHEF_OUT_OF_MEMORY;
 	}
@@ -130,9 +131,13 @@ ChefResult chefTakeTopDish(Chef chef, Dish * dish) {
 	if ((chef == NULL) || (dish == NULL)) {
 		return CHEF_NULL_ARGUMENT;
 	}
-	*dish = dishCopy(priorityQueueTop(chef->dishes));
-	if (*dish == NULL) {
+	Dish tempDish = priorityQueueTop(chef->dishes);
+	if(tempDish == NULL) {
 		return CHEF_HAS_NO_DISHES;
+	}
+	*dish = dishCopy(tempDish);
+	if(*dish == NULL) {
+		return CHEF_OUT_OF_MEMORY;
 	}
 	priorityQueuePop(chef->dishes);
 	return CHEF_SUCCESS;
@@ -150,8 +155,5 @@ bool chefHasDish(Chef chef) {
 	if (chef == NULL) {
 		return false;
 	}
-	if (priorityQueueGetSize(chef->dishes) > 0) {
-		return true;
-	}
-	return false;
+	return (priorityQueueGetSize(chef->dishes) > 0);
 }

@@ -8,7 +8,8 @@
 	ASSERT_TEST(dishCreate(name,type,taste,&result) == NULL && result == (a))
 
 #define ASSERT_CREATE_SUCCESS() \
-	ASSERT_TEST(dishCreate(name,type,taste,&result) != NULL && result == DISH_SUCCESS)
+	ASSERT_TEST(dishCreate(name,type,taste,&result) != NULL \
+		&& result == DISH_SUCCESS)
 
 #define DEFINE_BASIC_PARAMS const char* basicName = "blabla"; \
 		DishType const basicType = DISH_ENTREE; \
@@ -29,7 +30,8 @@ static bool dishCreateTest() {
 	DishResult result;
 	ASSERT_CREATE_SUCCESS();
 
-	name = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+[]{};':\"\\,./<>? ";
+	name = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\
+		~!@#$%^&*()_+[]{};':\"\\,./<>? ";
 	ASSERT_CREATE_SUCCESS();
 	name = NULL;
 	ASSERT_CREATE_FAIL(DISH_NULL_ARGUMENT);
@@ -43,9 +45,11 @@ static bool dishCreateTest() {
 	ASSERT_CREATE_FAIL(DISH_BAD_PARAM);
 	type = basicType;
 	
-	taste = (Taste){DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MIN};
+	taste = (Taste){DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MIN, 
+		DISH_TASTE_PARAM_MIN};
 	ASSERT_CREATE_SUCCESS();
-	taste = (Taste){DISH_TASTE_PARAM_MAX, DISH_TASTE_PARAM_MAX, DISH_TASTE_PARAM_MAX};
+	taste = (Taste){DISH_TASTE_PARAM_MAX, DISH_TASTE_PARAM_MAX, 
+		DISH_TASTE_PARAM_MAX};
 	ASSERT_CREATE_SUCCESS();
 	taste.saltiness = DISH_TASTE_PARAM_MIN-1;
 	ASSERT_CREATE_FAIL(DISH_BAD_PARAM);

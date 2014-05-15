@@ -4,7 +4,7 @@
 #include "dish.h"
 #include "common.h"
 
-struct dish {
+struct Dish_t {
 	char* name;
 	DishType type;
 	Taste taste;
@@ -18,6 +18,7 @@ Dish dishCreate(char const* name, DishType type, Taste taste, DishResult* result
 		!IN_RANGE(taste.sourness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
 		!IN_RANGE(taste.saltiness, DISH_TASTE_PARAM_MIN, DISH_TASTE_PARAM_MAX) ||
 		!IN_RANGE(type, DISH_TYPE_MIN, DISH_TYPE_MAX)) {
+
 		ASSIGN_AND_RETURN(result, DISH_BAD_PARAM, NULL)
 	}
 
