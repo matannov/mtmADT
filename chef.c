@@ -34,6 +34,7 @@ Chef chefCreate(char const* name, ChefResult* result) {
 		chefDestroy(chef);
 		ASSIGN_AND_RETURN(result, CHEF_OUT_OF_MEMORY, NULL)
 	}
+	chef->points = 0;
 	ASSIGN_AND_RETURN(result, CHEF_SUCCESS, chef)
 }
 
@@ -60,6 +61,7 @@ Chef chefCopy(Chef source) {
 		chefDestroy(copy);
 		return NULL;
 	}
+	copy->points = source->points;
 	return copy;
 }
 
@@ -120,7 +122,7 @@ ChefResult chefCompareNames(Chef first, Chef second, int* result) {
 }
 
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
-	if(first == NULL || second == NULL) {
+	if(first == NULL || second == NULL || firstBetter == NULL) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	*firstBetter = (first->points > second->points);

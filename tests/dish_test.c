@@ -109,9 +109,9 @@ static bool dishCopyTest() {
 	char* name;
 	Taste taste;
 	DishType type;
-	dishGetName(copy,&name);
-	dishGetTaste(copy,&taste);
-	dishGetType(copy,&type);
+	ASSERT_TEST(dishGetName(copy,&name) == DISH_SUCCESS);
+	ASSERT_TEST(dishGetTaste(copy,&taste) == DISH_SUCCESS);
+	ASSERT_TEST(dishGetType(copy,&type) == DISH_SUCCESS);
 	ASSERT_TEST(STR_EQUALS(name,basicName) &&
 		memcmp(&taste,&basicTaste,sizeof(taste)) == 0 &&
 		type == basicType);
