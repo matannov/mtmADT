@@ -6,7 +6,7 @@
 #include "set.h"
 #include "judge.h"
 
-struct judge {
+struct Judge_t {
 	char* nickname;
 	Set hatedChefs;
 	int badTastings;

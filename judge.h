@@ -26,7 +26,7 @@ typedef enum {
 	JUDGE_BAD_PREFERENCE_RESULT
 } JudgeResult;
 
-typedef struct judge *Judge;
+typedef struct Judge_t *Judge;
 
 /*
  * Create a new judge with given nickname and preference function.
