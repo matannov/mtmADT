@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "test_utilities.h"
 #include "../chef.h"
 #include "../common.h"
-#include <stdbool.h>
 
 #define ASSERT_CREATE_FAIL(a) \
 	ASSERT_TEST(chefCreate(name,&result) == NULL && result == (a))
