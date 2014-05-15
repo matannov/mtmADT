@@ -81,7 +81,7 @@ ChefResult chefAddDish(Chef chef, Dish dish, int priority) {
 	if(priority < CHEF_DISH_PRIORITY_MIN) {
 		return CHEF_BAD_PRIORITY;
 	}
-	PriorityQueueResult result = priorityQueueAdd(chef->dishes, &dish, priority);
+	PriorityQueueResult result = priorityQueueAdd(chef->dishes, dish, priority);
 	if(result == PRIORITY_QUEUE_OUT_OF_MEMORY) {
 		return CHEF_OUT_OF_MEMORY;
 	}
