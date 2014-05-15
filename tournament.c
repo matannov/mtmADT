@@ -212,7 +212,7 @@ TournamentResult tournamentAddDishToChef(Tournament tournament,
 	}
 
 	ChefResult chefResult = chefAddDish(target, dish, priority);
-	free(dish);
+	dishDestroy(dish);
 	switch(chefResult) {
 	case CHEF_BAD_PRIORITY:
 		return TOURNAMENT_BAD_PARAM;

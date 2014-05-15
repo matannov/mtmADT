@@ -48,6 +48,7 @@ static void printTopDish (Tournament tournament) {
 		return;
 	}
 	mtmPrintTopDish(stdout, chefName, dishName);
+	free(dishName);
 }
 
 static void addJudge (Tournament tournament) {
@@ -77,15 +78,21 @@ static void addJudge (Tournament tournament) {
 }
 
 static void printJudges (Tournament tournament) {
-	
 	char ** judges;
 	int numberOfJudges;
 	TournamentResult result = tournamentGetJudges(tournament, &judges, &numberOfJudges);
+	if (result == TOURNAMENT_OUT_OF_MEMORY) {
+		handleOutOfMemory(tournament);
+	}
 	if(result == TOURNAMENT_HAS_NO_JUDGES) {
 		mtmPrintErrorMessage(stderr,MTM_NO_JUDGES);
 		return;
 	}
 	mtmPrintAllJudges(stdout, judges, numberOfJudges);
+	for (int i = 0; i < numberOfJudges; i++) {
+		free(judges[i]);
+	}
+	free(judges);
 }
 
 static void printLeading (Tournament tournament) {
@@ -174,6 +181,7 @@ static void compete(Tournament tournament) {
 	}
 	for(int i=0; i<resigningCount; i++) {
 		mtmPrintJudgeResignationMessage(stdout,resigningJudges[i]);
+		free(resigningJudges[i]);
 	}
 	free(resigningJudges);
 	if(result == TOURNAMENT_HAS_NO_JUDGES) {
