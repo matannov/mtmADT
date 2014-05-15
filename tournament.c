@@ -122,7 +122,7 @@ TournamentResult tournamentLeadingChef(Tournament tournament, Chef* leader) {
 	if(setGetSize(tournament->chefs) == 0) {
 		return TOURNAMENT_HAS_NO_CHEFS;
 	}
-	bool isBetter;
+	bool isBetter = false;
 	Chef best = (Chef)setGetFirst(tournament->chefs);
 	SET_FOREACH(Chef, chef, tournament->chefs) {
 		chefIsBetterRanked(chef, best, &isBetter);
@@ -290,7 +290,7 @@ static TournamentResult competeTwoDishes(Tournament tournament, Dish dish1,
 	Judge currentJudge = listGetFirst(tournament->judges);
 	int remainingJudges = listGetSize(tournament->judges);
 	int dishPoints1 = 0, dishPoints2 = 0;
-	while(DISTANCE(dishPoints1, dishPoints2) < remainingJudges) {
+	while((DISTANCE(dishPoints1, dishPoints2) <= remainingJudges) && (remainingJudges > 0)) {
 		bool firstWins, resignation;
 		JudgeResult judgeResult = judgeJudgeDishes(currentJudge, dish1, dish2, 
 			chefName1, chefName2, &firstWins, &resignation);
@@ -305,14 +305,21 @@ static TournamentResult competeTwoDishes(Tournament tournament, Dish dish1,
 		}
 		if(resignation) {
 			judgeResult = judgeGetNickname(currentJudge,
-				resigningJudges[*resigningCount]);
+				((*resigningJudges) + *resigningCount));
 			if(judgeResult == JUDGE_OUT_OF_MEMORY) {
 				return TOURNAMENT_OUT_OF_MEMORY;
 			}
 			(*resigningCount)++;
 			listRemoveCurrent(tournament->judges);
+			currentJudge = listGetFirst(tournament->judges);
+			for (int j = 0;
+				j < listGetSize(tournament->judges) - remainingJudges - 1; j++) {
+				currentJudge = listGetNext(tournament->judges);
+			}
 		}
-		currentJudge = listGetNext(tournament->judges);
+		else {
+			currentJudge = listGetNext(tournament->judges);
+		}
 		remainingJudges--;
 	}
 	if(dishPoints1 > dishPoints2) {
@@ -356,7 +363,6 @@ TournamentResult tournamentCompete(Tournament tournament,
 		dishDestroy(dish1);
 		dishDestroy(dish2);
 		if(result != TOURNAMENT_SUCCESS) {
-			freeArray((void**)*resigningJudges, *resigningCount);
 			return result;
 		}	
 	} while(chefHasDish(chef1) && chefHasDish(chef2));

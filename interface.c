@@ -174,7 +174,6 @@ static void compete(Tournament tournament) {
 	}
 	for(int i=0; i<resigningCount; i++) {
 		mtmPrintJudgeResignationMessage(stdout,resigningJudges[i]);
-		free(resigningJudges[i]);
 	}
 	free(resigningJudges);
 	if(result == TOURNAMENT_HAS_NO_JUDGES) {

@@ -28,6 +28,7 @@ Chef chefCreate(char const* name, ChefResult* result) {
 	if(chef == NULL) {
 		ASSIGN_AND_RETURN(result, CHEF_OUT_OF_MEMORY, NULL)
 	}
+	chef->points = 0;
 	chef->name = cloneString(name);
 	chef->dishes = priorityQueueCreate(&copyDish, &destroyDish);
 	if(chef->name ==  NULL || chef->dishes == NULL) {
@@ -120,7 +121,7 @@ ChefResult chefCompareNames(Chef first, Chef second, int* result) {
 }
 
 ChefResult chefIsBetterRanked(Chef first, Chef second, bool* firstBetter) {
-	if(first == NULL || second == NULL) {
+	if ((first == NULL) || (second == NULL)) {
 		return CHEF_NULL_ARGUMENT;
 	}
 	*firstBetter = (first->points > second->points);
