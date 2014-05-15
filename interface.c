@@ -8,19 +8,12 @@
 #include "judge_preferences.h"
 
 #define getInt(holder,param) \
-	holder = strtok(NULL," \n"); \
+	holder = strtok(NULL," \n\t"); \
 	if (holder == NULL) { \
 		mtmPrintErrorMessage(stdout,MTM_INVALID_INPUT_COMMAND_PARAMETERS); \
 		return; \
 	} \
-	printf("got %s",holder); \
 	int param = atoi(holder);
-	
-#define CHECK_OVERFLOW \
-		if (strtok(NULL," \n") != NULL) { \
-		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS); \
-		return; \
-	}
 
 /* called to handle an out of memory error */
 static void handleOutOfMemory(Tournament tournament) {
@@ -38,8 +31,8 @@ static void reset (Tournament * tournament) {
 }
 
 static void printTopDish (Tournament tournament) {
-	char * chefName = strtok(NULL," \n");
-	CHECK_OVERFLOW;
+	char * chefName = strtok(NULL," \n\t");
+	
 	if (chefName == NULL) {
 		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 		return;
@@ -58,10 +51,10 @@ static void printTopDish (Tournament tournament) {
 }
 
 static void addJudge (Tournament tournament) {
-	char * nickname = strtok(NULL, " \n");
+	char * nickname = strtok(NULL, " \n\t");
 	char * intHolder;
 	getInt(intHolder,preference);
-	CHECK_OVERFLOW;
+	
 	JudgeByPreference judgeByPreference;
 	switch(preference) {
 	case 1:
@@ -84,7 +77,7 @@ static void addJudge (Tournament tournament) {
 }
 
 static void printJudges (Tournament tournament) {
-	CHECK_OVERFLOW;
+	
 	char ** judges;
 	int numberOfJudges;
 	TournamentResult result = tournamentGetJudges(tournament, &judges, &numberOfJudges);
@@ -96,7 +89,7 @@ static void printJudges (Tournament tournament) {
 }
 
 static void printLeading (Tournament tournament) {
-	CHECK_OVERFLOW;
+	
 	Chef leader;
 	if(tournamentLeadingChef(tournament, &leader) == TOURNAMENT_HAS_NO_CHEFS) {
 		mtmPrintErrorMessage(stderr, MTM_NO_CHEFS);
@@ -111,12 +104,12 @@ static void printLeading (Tournament tournament) {
 }
 
 static void addChef (Tournament tournament) {
-	char * name = strtok(NULL," \n");
+	char * name = strtok(NULL," \n\t");
 	if (name == NULL) {
 		mtmPrintErrorMessage(stdout,MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 		return;
 	}
-	CHECK_OVERFLOW;
+	
 	TournamentResult result;
 	result = tournamentAddChef(tournament, name);
 	if (result == TOURNAMENT_OUT_OF_MEMORY) {
@@ -128,15 +121,15 @@ static void addChef (Tournament tournament) {
 }
 
 static void addDish (Tournament tournament) {
-	char * chefName = strtok(NULL," \n");
-	char * dishName = strtok(NULL," \n");
+	char * chefName = strtok(NULL," \n\t");
+	char * dishName = strtok(NULL," \n\t");
 	char * intHolder;
 	getInt(intHolder,dishType)
 	getInt(intHolder,sweetness)
 	getInt(intHolder,sourness)
 	getInt(intHolder,saltyness)
 	getInt(intHolder,priority)
-	CHECK_OVERFLOW;
+	
 	Taste taste = {sweetness, sourness, saltyness};
 	TournamentResult result = tournamentAddDishToChef(tournament, chefName, dishName, dishType, taste, priority);
 	switch(result) {
@@ -155,8 +148,8 @@ static void addDish (Tournament tournament) {
 }
 
 static void compete(Tournament tournament) {
-	char* chefName1 = strtok(NULL," \n");
-	char* chefName2 = strtok(NULL," \n");
+	char* chefName1 = strtok(NULL," \n\t");
+	char* chefName2 = strtok(NULL," \n\t");
 	char** resigningJudges;
 	int resigningCount;
 	bool firstChefWins, secondChefWins;
@@ -198,14 +191,19 @@ static void compete(Tournament tournament) {
 }
 	
 static void proccessCommand (char * line, Tournament tournament) {
-	char * primaryCommand = strtok(line," \n");
-	char * secondaryCommand = strtok(NULL," \n");
-	if ((primaryCommand == NULL) || (secondaryCommand == NULL)) {
+	char * primaryCommand = strtok(line," \n\t");
+	char * secondaryCommand = strtok(NULL," \n\t");
+	if (primaryCommand == NULL) {
+		return;
+	}
+	if (strchr(primaryCommand,'#') == primaryCommand) {
+		return;
+	}
+	if (secondaryCommand == NULL) {
 		mtmPrintErrorMessage(stderr, MTM_INVALID_INPUT_COMMAND_PARAMETERS);
 		return;
 	}
 	if (STR_EQUALS(primaryCommand,"reset")) {	
-		printf("reseting...\n");
 		reset(&tournament);
 		return;
 	}

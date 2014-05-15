@@ -201,7 +201,6 @@ TournamentResult tournamentAddDishToChef(Tournament tournament,
 	}
 
 	DishResult dishResult;
-	printf("got this type: %d\n",type);
 	Dish dish = dishCreate(dishName, type, taste, &dishResult);
 	switch(dishResult) {
 	case DISH_BAD_PARAM:
